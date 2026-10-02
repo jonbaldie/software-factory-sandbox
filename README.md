@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { camelCase, slugify, titleCase, truncate, wordCount } from './src/textkit.js';
+import { camelCase, collapseWhitespace, isBlank, reverseWords, slugify, titleCase, truncate, wordCount } from './src/textkit.js';
 ```
 
 ## API
@@ -14,6 +14,30 @@ Joins words into camelCase, splitting at whitespace, hyphens, and underscores. E
 
 ```js
 camelCase('Hello-World_foo bar'); // "helloWorldFooBar"
+```
+
+### `collapseWhitespace(input)`
+
+Replaces each run of whitespace with a single space and trims whitespace from the ends.
+
+```js
+collapseWhitespace('  a \t b\n\nc  '); // "a b c"
+```
+
+### `isBlank(input)`
+
+Returns `true` when the string is empty or contains only whitespace; otherwise returns `false`.
+
+```js
+isBlank(' \t\n '); // true
+```
+
+### `reverseWords(input)`
+
+Reverses the order of whitespace-separated words and joins them with single spaces. Empty or whitespace-only input returns an empty string.
+
+```js
+reverseWords('one  two three'); // "three two one"
 ```
 
 ### `slugify(input)`

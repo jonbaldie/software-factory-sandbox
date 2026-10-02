@@ -1,6 +1,26 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { camelCase, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { camelCase, collapseWhitespace, isBlank, reverseWords, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
+
+test('collapseWhitespace replaces runs of whitespace with one space and trims ends', () => {
+  assert.equal(collapseWhitespace('  a \t b\n\nc  '), 'a b c');
+});
+
+test('collapseWhitespace returns empty for empty or whitespace-only input', () => {
+  assert.deepEqual([collapseWhitespace(''), collapseWhitespace(' \t\n ')], ['', '']);
+});
+
+test('isBlank distinguishes empty and whitespace-only strings from nonblank input', () => {
+  assert.deepEqual([isBlank(''), isBlank(' \t\n '), isBlank('text')], [true, true, false]);
+});
+
+test('reverseWords reverses whitespace-separated words with single spaces', () => {
+  assert.equal(reverseWords('one  two three'), 'three two one');
+});
+
+test('reverseWords returns empty for empty or whitespace-only input', () => {
+  assert.deepEqual([reverseWords(''), reverseWords(' \t\n ')], ['', '']);
+});
 
 test('camelCase joins words with a lowercase first word and camel-cased remainder', () => {
   assert.equal(camelCase('hello world'), 'helloWorld');
