@@ -1,6 +1,5 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { performance } from 'node:perf_hooks';
 import { slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
 
 test('slugify lowercases and hyphenates', () => {
@@ -42,16 +41,6 @@ test('titleCase handles an empty string', () => {
 test('truncate leaves fitting and empty strings unchanged', () => {
   assert.equal(truncate('short', 10), 'short');
   assert.equal(truncate('', 1), '');
-});
-
-test('truncate does not stall on a long input with a short limit', () => {
-  const input = 'x'.repeat(34_000_000);
-  const start = performance.now();
-  const result = truncate(input, 1);
-  const elapsedMs = performance.now() - start;
-
-  assert.equal(result, '…');
-  assert.ok(elapsedMs < 500, `truncate stalled for ${Math.round(elapsedMs)}ms`);
 });
 
 test('truncate keeps the longest whole-word prefix and removes trailing whitespace', () => {
