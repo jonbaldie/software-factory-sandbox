@@ -107,8 +107,11 @@ jobs:
 
           printf '%s\n\nCloses #%s\n\n---\n_Opened by the factory · [implement run](%s)_\n' \
             "$AGENT_SUMMARY" "$ISSUE" "$RUN_URL" > "$RUNNER_TEMP/body.md"
-          pr_url=$(gh pr view "$branch" --json url -q .url 2>/dev/null ||
-            gh pr create --head "$branch" --title "$title" --body-file "$RUNNER_TEMP/body.md" --label agent:review)
+          # A retry after a PR was closed opens a fresh one: the closed PR keeps the old description and can't merge.
+          pr_url=$(gh pr list --head "$branch" --state open --json url -q '.[].url')
+          if [ -z "$pr_url" ]; then
+            pr_url=$(gh pr create --head "$branch" --title "$title" --body-file "$RUNNER_TEMP/body.md" --label agent:review)
+          fi
 
           gh issue edit "$ISSUE" --remove-label agent:working
           gh issue comment "$ISSUE" --body "🏭 Opened $pr_url"
