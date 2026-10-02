@@ -84,6 +84,7 @@ jobs:
               "verdict": {"type": "string", "enum": ["approve", "request_changes"]},
               "summary": {"type": "string"},
               "required_changes": {"type": "array", "items": {"type": "string"}}}}
+          openrouter-api-key: ${{ secrets.OPENROUTER_API_KEY }}
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 

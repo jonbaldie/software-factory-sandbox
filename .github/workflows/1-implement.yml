@@ -57,6 +57,7 @@ jobs:
           name: implement-issue-${{ env.ISSUE }}
           prompt-file: ${{ runner.temp }}/prompt.md
           max-budget-usd: "1.50"
+          openrouter-api-key: ${{ secrets.OPENROUTER_API_KEY }}
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 

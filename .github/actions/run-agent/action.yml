@@ -1,7 +1,7 @@
 name: Run agent
 description: >
-  Runs Claude Code headless on a prompt file. Streams a readable log, writes a job
-  summary, uploads the full transcript, and exposes the result as outputs.
+  Runs a coding agent (pi or Claude Code) headless on a prompt file. Streams a readable
+  log, writes a job summary, uploads the full transcript, and exposes the result as outputs.
 
 inputs:
   name:
@@ -10,22 +10,31 @@ inputs:
   prompt-file:
     description: Path to a markdown file containing the full prompt.
     required: true
+  harness:
+    description: pi or claude.
+    default: pi
+  openrouter-api-key:
+    description: OpenRouter API key, for pi.
+    default: ""
   anthropic-api-key:
-    description: Anthropic API key. Set this or claude-code-oauth-token.
+    description: Anthropic API key, for claude. Set this or claude-code-oauth-token.
     default: ""
   claude-code-oauth-token:
-    description: Token from `claude setup-token`. Set this or anthropic-api-key.
+    description: Token from `claude setup-token`, for claude. Set this or anthropic-api-key.
     default: ""
   model:
-    default: sonnet
+    description: Defaults to openrouter/openai/gpt-6-luna:max for pi and sonnet for claude.
+    default: ""
   max-budget-usd:
     description: Hard cost cap for this run.
     default: "1.00"
   permission-mode:
-    description: bypassPermissions is fine on a throwaway runner that holds no GitHub credentials.
+    description: >
+      claude only. bypassPermissions is fine on a throwaway runner that holds no GitHub
+      credentials. pi has no permission modes, so it always behaves like bypassPermissions.
     default: bypassPermissions
   allowed-tools:
-    description: Comma-separated tool allowlist, used with a stricter permission-mode.
+    description: Comma-separated tool allowlist, in Claude Code's tool names. pi gets the same tools.
     default: ""
   json-schema:
     description: If set, the agent must return structured output matching this schema.
@@ -46,9 +55,16 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Install Claude Code
+    - name: Install ${{ inputs.harness }}
       shell: bash
-      run: npm install --global --silent @anthropic-ai/claude-code
+      env:
+        HARNESS: ${{ inputs.harness }}
+      run: |
+        case "$HARNESS" in
+          pi) npm install --global --silent @earendil-works/pi-coding-agent@1.0.0 ;;
+          claude) npm install --global --silent @anthropic-ai/claude-code ;;
+          *) echo "::error::Unknown harness '$HARNESS'. Use pi or claude."; exit 1 ;;
+        esac
 
     - name: Run the agent
       id: run
@@ -56,6 +72,8 @@ runs:
       env:
         NAME: ${{ inputs.name }}
         PROMPT_FILE: ${{ inputs.prompt-file }}
+        HARNESS: ${{ inputs.harness }}
+        IN_OPENROUTER_API_KEY: ${{ inputs.openrouter-api-key }}
         IN_API_KEY: ${{ inputs.anthropic-api-key }}
         IN_OAUTH_TOKEN: ${{ inputs.claude-code-oauth-token }}
         MODEL: ${{ inputs.model }}
@@ -66,31 +84,44 @@ runs:
       run: |
         set -euo pipefail
 
-        if [ -n "$IN_API_KEY" ]; then export ANTHROPIC_API_KEY="$IN_API_KEY"; fi
-        if [ -n "$IN_OAUTH_TOKEN" ]; then export CLAUDE_CODE_OAUTH_TOKEN="$IN_OAUTH_TOKEN"; fi
-        if [ -z "$IN_API_KEY" ] && [ -z "$IN_OAUTH_TOKEN" ]; then
-          echo "::error::No Claude credential. Add an ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN repository secret."
-          exit 1
-        fi
-
-        args=(-p --model "$MODEL" --max-budget-usd "$BUDGET" --permission-mode "$PERMISSION_MODE"
-              --output-format stream-json --verbose)
-        if [ -n "$ALLOWED_TOOLS" ]; then args+=(--allowedTools "$ALLOWED_TOOLS"); fi
-        if [ -n "$JSON_SCHEMA" ]; then args+=(--json-schema "$JSON_SCHEMA"); fi
-
         # Keep the raw transcript for the artifact; print a readable version to the log.
         transcript="$RUNNER_TEMP/$NAME.jsonl"
-        claude "${args[@]}" < "$PROMPT_FILE" | tee "$transcript" | jq --unbuffered -r '
-          if .type == "assistant" then
-            .message.content[]? |
-              if .type == "text" then "💬 " + .text
-              elif .type == "tool_use" then "🔧 " + .name + " " + (.input | tostring | .[0:200])
-              else empty end
-          elif .type == "result" then
-            "🏁 " + .subtype + " · " + (.num_turns | tostring) + " turns · $" + (.total_cost_usd | tostring)
-          else empty end' || true
 
-        result_line=$(jq -c 'select(.type == "result")' "$transcript" | tail -n 1)
+        if [ "$HARNESS" = pi ]; then
+          if [ -z "$IN_OPENROUTER_API_KEY" ]; then
+            echo "::error::No OpenRouter credential. Add an OPENROUTER_API_KEY repository secret."
+            exit 1
+          fi
+          export OPENROUTER_API_KEY="$IN_OPENROUTER_API_KEY"
+          export MODEL="${MODEL:-openrouter/openai/gpt-6-luna:max}"
+          TRANSCRIPT="$transcript" node "$GITHUB_ACTION_PATH/pi.mjs" || true
+        else
+          if [ -n "$IN_API_KEY" ]; then export ANTHROPIC_API_KEY="$IN_API_KEY"; fi
+          if [ -n "$IN_OAUTH_TOKEN" ]; then export CLAUDE_CODE_OAUTH_TOKEN="$IN_OAUTH_TOKEN"; fi
+          if [ -z "$IN_API_KEY" ] && [ -z "$IN_OAUTH_TOKEN" ]; then
+            echo "::error::No Claude credential. Add an ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN repository secret."
+            exit 1
+          fi
+          MODEL="${MODEL:-sonnet}"
+
+          args=(-p --model "$MODEL" --max-budget-usd "$BUDGET" --permission-mode "$PERMISSION_MODE"
+                --output-format stream-json --verbose)
+          if [ -n "$ALLOWED_TOOLS" ]; then args+=(--allowedTools "$ALLOWED_TOOLS"); fi
+          if [ -n "$JSON_SCHEMA" ]; then args+=(--json-schema "$JSON_SCHEMA"); fi
+
+          claude "${args[@]}" < "$PROMPT_FILE" | tee "$transcript" | jq --unbuffered -r '
+            if .type == "assistant" then
+              .message.content[]? |
+                if .type == "text" then "💬 " + .text
+                elif .type == "tool_use" then "🔧 " + .name + " " + (.input | tostring | .[0:200])
+                else empty end
+            elif .type == "result" then
+              "🏁 " + .subtype + " · " + (.num_turns | tostring) + " turns · $" + (.total_cost_usd | tostring)
+            else empty end' || true
+        fi
+
+        # Both harnesses end the transcript with a Claude Code-style result line.
+        result_line=$(jq -c -R 'fromjson? | select(.type == "result")' "$transcript" | tail -n 1)
         if [ -z "$result_line" ]; then
           echo "::error::The agent exited without a result. See the transcript artifact."
           exit 1
@@ -112,9 +143,9 @@ runs:
         {
           echo "## 🤖 Agent: $NAME"
           echo
-          echo "| Model | Turns | Cost | Outcome |"
-          echo "|---|---|---|---|"
-          echo "| $MODEL | $turns | \$$cost | $outcome |"
+          echo "| Harness | Model | Turns | Cost | Outcome |"
+          echo "|---|---|---|---|---|"
+          echo "| $HARNESS | $MODEL | $turns | \$$cost | $outcome |"
           echo
           echo "### Final message"
           echo
