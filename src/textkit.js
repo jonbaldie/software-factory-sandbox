@@ -1,4 +1,34 @@
 /**
+ * Replace runs of whitespace with a single space and trim the ends.
+ * @example collapseWhitespace('  a \t b\n\nc  ') // "a b c"
+ * @param {string} input
+ * @returns {string}
+ */
+export function collapseWhitespace(input) {
+  return input.replace(/\s+/gu, ' ').trim();
+}
+
+/**
+ * Check whether a string is empty or contains only whitespace.
+ * @example isBlank(' \t\n ') // true
+ * @param {string} input
+ * @returns {boolean}
+ */
+export function isBlank(input) {
+  return input.trim().length === 0;
+}
+
+/**
+ * Reverse the order of whitespace-separated words, joining them with single spaces.
+ * @example reverseWords('one  two three') // "three two one"
+ * @param {string} input
+ * @returns {string}
+ */
+export function reverseWords(input) {
+  return input.trim().split(/\s+/u).reverse().join(' ');
+}
+
+/**
  * Convert a string to camelCase, splitting words at whitespace, hyphens, and underscores.
  * @example camelCase('hello world') // "helloWorld"
  * @param {string} input
