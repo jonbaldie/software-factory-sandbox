@@ -1,0 +1,99 @@
+name: "3 · Fix"
+
+# An agent addresses review feedback on a factory PR, then hands back to the reviewer.
+
+on:
+  pull_request:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number
+        required: true
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: factory-pr-${{ github.event.pull_request.number || inputs.pr }}
+
+jobs:
+  fix:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'agent:changes-requested'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      PR: ${{ github.event.pull_request.number || inputs.pr }}
+      GH_REPO: ${{ github.repository }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - name: Find the PR branch
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "branch=$(gh pr view "$PR" --json headRefName -q .headRefName)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ steps.pr.outputs.branch }}
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Build the fix prompt
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            cat .github/prompts/fix.md
+            echo
+            echo "## The ticket"
+            for n in $(gh pr view "$PR" --json closingIssuesReferences -q '.closingIssuesReferences[].number'); do
+              gh issue view "$n" --json number,title,body -q '"### #\(.number): \(.title)\n\n\(.body)\n"'
+            done
+            echo "## Latest review"
+            gh pr view "$PR" --json comments \
+              -q '[.comments[] | select(.body | contains("<!-- factory:review request_changes -->"))] | last | .body'
+            echo
+            echo "## Comments from humans"
+            gh pr view "$PR" --json comments \
+              -q '.comments[] | select(.author.login != "github-actions") | "- @\(.author.login): \(.body)"'
+          } > "$RUNNER_TEMP/prompt.md"
+
+      - name: Agent addresses the feedback
+        uses: ./.github/actions/run-agent
+        with:
+          name: fix-pr-${{ env.PR }}
+          prompt-file: ${{ runner.temp }}/prompt.md
+          max-budget-usd: "1.00"
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+      - name: Push and hand back to the reviewer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRANCH: ${{ steps.pr.outputs.branch }}
+        run: |
+          git add -A
+          if git diff --cached --quiet; then
+            echo "::error::The agent finished without changing any files"
+            exit 1
+          fi
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -q -m "Address review feedback"
+          git push "https://x-access-token:${GH_TOKEN}@github.com/${GH_REPO}.git" "HEAD:$BRANCH"
+          gh pr edit "$PR" --remove-label agent:changes-requested --add-label agent:review
+          gh workflow run 2-review.yml -f pr="$PR"
+
+      - name: Report failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh pr edit "$PR" --remove-label agent:changes-requested --add-label agent:failed
+          gh pr comment "$PR" --body "💥 The fix stage failed. [See the run]($RUN_URL). Re-add \`agent:changes-requested\` to retry."

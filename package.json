@@ -1,0 +1,11 @@
+{
+  "name": "textkit",
+  "version": "0.1.0",
+  "description": "Tiny string helpers, built by a GitHub Actions software factory.",
+  "type": "module",
+  "main": "src/textkit.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT"
+}

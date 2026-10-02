@@ -1,0 +1,101 @@
+name: "1 · Implement"
+
+# An issue labelled `agent:ready` becomes a pull request.
+
+on:
+  issues:
+    types: [labeled]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: Issue number
+        required: true
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: factory-issue-${{ github.event.issue.number || inputs.issue }}
+
+jobs:
+  implement:
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'agent:ready'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      ISSUE: ${{ github.event.issue.number || inputs.issue }}
+      GH_REPO: ${{ github.repository }}
+      RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false # keep the GitHub token out of the agent's sandbox
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+
+      - name: Claim the ticket
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue edit "$ISSUE" --remove-label agent:ready --remove-label agent:failed --add-label agent:working
+          gh issue comment "$ISSUE" --body "🏭 The factory picked this up. [Watch the run]($RUN_URL)"
+          {
+            cat .github/prompts/implement.md
+            echo
+            gh issue view "$ISSUE" --json number,title,body -q '"## Ticket #\(.number): \(.title)\n\n\(.body)"'
+          } > "$RUNNER_TEMP/prompt.md"
+
+      - name: Agent writes the code
+        id: agent
+        uses: ./.github/actions/run-agent
+        with:
+          name: implement-issue-${{ env.ISSUE }}
+          prompt-file: ${{ runner.temp }}/prompt.md
+          max-budget-usd: "1.50"
+          anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+      - name: Tests must pass before a PR is opened
+        run: npm test
+
+      - name: Open the pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          AGENT_SUMMARY: ${{ steps.agent.outputs.result }}
+        run: |
+          branch="agent/issue-$ISSUE"
+          title=$(gh issue view "$ISSUE" --json title -q .title)
+
+          git switch -c "$branch"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "::error::The agent finished without changing any files"
+            exit 1
+          fi
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -q -m "$title" -m "Closes #$ISSUE"
+          git push --force "https://x-access-token:${GH_TOKEN}@github.com/${GH_REPO}.git" "$branch"
+
+          printf '%s\n\nCloses #%s\n\n---\n_Opened by the factory · [implement run](%s)_\n' \
+            "$AGENT_SUMMARY" "$ISSUE" "$RUN_URL" > "$RUNNER_TEMP/body.md"
+          pr_url=$(gh pr view "$branch" --json url -q .url 2>/dev/null ||
+            gh pr create --head "$branch" --title "$title" --body-file "$RUNNER_TEMP/body.md" --label agent:review)
+
+          gh issue edit "$ISSUE" --remove-label agent:working
+          gh issue comment "$ISSUE" --body "🏭 Opened $pr_url"
+
+          # Labels added with GITHUB_TOKEN don't trigger workflows, so hand off to the reviewer explicitly.
+          gh workflow run 2-review.yml -f pr="${pr_url##*/}"
+
+      - name: Report failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue edit "$ISSUE" --remove-label agent:working --add-label agent:failed
+          gh issue comment "$ISSUE" --body "💥 The factory failed on this ticket. [See the run]($RUN_URL). Re-add \`agent:ready\` to retry."
