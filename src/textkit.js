@@ -19,6 +19,17 @@ export function isBlank(input) {
 }
 
 /**
+ * Check whether a string reads the same backwards, ignoring case and non-alphanumeric characters.
+ * @example isPalindrome('A man, a plan, a canal: Panama') // true
+ * @param {string} input
+ * @returns {boolean}
+ */
+export function isPalindrome(input) {
+  const characters = [...input.toLowerCase().replace(/[^\p{L}\p{N}]/gu, '')];
+  return characters.every((character, index) => character === characters[characters.length - index - 1]);
+}
+
+/**
  * Return the uppercase first letter of each whitespace-separated word.
  * @example initials('Ada Lovelace') // "AL"
  * @example initials('Ada Lovelace', '.') // "A.L."

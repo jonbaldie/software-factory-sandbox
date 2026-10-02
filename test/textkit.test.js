@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { camelCase, collapseWhitespace, countOccurrences, initials, isBlank, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
 
 test('collapseWhitespace replaces runs of whitespace with one space and trims ends', () => {
   assert.equal(collapseWhitespace('  a \t b\n\nc  '), 'a b c');
@@ -12,6 +12,22 @@ test('collapseWhitespace returns empty for empty or whitespace-only input', () =
 
 test('isBlank distinguishes empty and whitespace-only strings from nonblank input', () => {
   assert.deepEqual([isBlank(''), isBlank(' \t\n '), isBlank('text')], [true, true, false]);
+});
+
+test('isPalindrome ignores case and non-alphanumeric characters', () => {
+  assert.equal(isPalindrome('A man, a plan, a canal: Panama'), true);
+});
+
+test('isPalindrome returns false for non-palindromic input', () => {
+  assert.equal(isPalindrome('abc'), false);
+});
+
+test('isPalindrome returns true for empty input', () => {
+  assert.equal(isPalindrome(''), true);
+});
+
+test('isPalindrome recognizes Unicode letters and digits', () => {
+  assert.equal(isPalindrome('É2X2é'), true);
 });
 
 test('initials uppercases and joins the first letter of each word', () => {
