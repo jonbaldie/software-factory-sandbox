@@ -1,6 +1,34 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { camelCase, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
+
+test('camelCase joins words with a lowercase first word and camel-cased remainder', () => {
+  assert.equal(camelCase('hello world'), 'helloWorld');
+});
+
+test('camelCase splits words at spaces, hyphens, and underscores', () => {
+  assert.equal(camelCase('Hello-World_foo bar'), 'helloWorldFooBar');
+});
+
+test('camelCase lowercases uppercase input', () => {
+  assert.equal(camelCase('HELLO WORLD'), 'helloWorld');
+});
+
+test('camelCase ignores leading, trailing, and repeated separators', () => {
+  assert.equal(camelCase('  --foo__  '), 'foo');
+});
+
+test('camelCase keeps numeric words in sequence', () => {
+  assert.equal(camelCase('version 2 beta'), 'version2Beta');
+});
+
+test('camelCase keeps accented letters', () => {
+  assert.equal(camelCase('élan vital'), 'élanVital');
+});
+
+test('camelCase returns empty for empty or separator-only input', () => {
+  assert.deepEqual([camelCase(''), camelCase(' - _ ')], ['', '']);
+});
 
 test('slugify lowercases and hyphenates', () => {
   assert.equal(slugify('Hello, World!'), 'hello-world');

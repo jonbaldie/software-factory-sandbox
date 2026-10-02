@@ -1,4 +1,21 @@
 /**
+ * Convert a string to camelCase, splitting words at whitespace, hyphens, and underscores.
+ * @example camelCase('hello world') // "helloWorld"
+ * @param {string} input
+ * @returns {string}
+ */
+export function camelCase(input) {
+  return input
+    .split(/[\s_-]+/u)
+    .filter(Boolean)
+    .map((word, index) => {
+      const lower = word.toLowerCase();
+      return index === 0 ? lower : lower[0].toUpperCase() + lower.slice(1);
+    })
+    .join('');
+}
+
+/**
  * Turn a string into a URL-safe slug.
  * @example slugify("Hello, World!") // "hello-world"
  * @param {string} input
