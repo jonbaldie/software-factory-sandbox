@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { slugify, titleCase } from './src/textkit.js';
+import { slugify, titleCase, wordCount } from './src/textkit.js';
 ```
 
 ## API
@@ -22,4 +22,12 @@ Capitalises the first letter of every word and each hyphenated part, while treat
 
 ```js
 titleCase('hello world'); // "Hello World"
+```
+
+### `wordCount(input)`
+
+Counts words made from Unicode letters or numbers. Internal hyphens and straight or curly apostrophes keep a word together; punctuation-only and empty input return `0`.
+
+```js
+wordCount('well-known phrase'); // 2
 ```
