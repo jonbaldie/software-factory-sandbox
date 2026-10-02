@@ -13,15 +13,15 @@ Build one command that goes **red** on this bug: it drives the code path where t
 
 Then make it **tight**: seconds to run, the same verdict every run (pin the time, seed randomness, isolate the filesystem and network), asserting the specific symptom. For an intermittent bug, raise the reproduction rate (repeat the trigger, add load, narrow the timing window) until most runs go red.
 
-Done when you have run the command and watched it go red on the reported symptom. Theories wait until then.
+Done when you have run the command and watched it go red on the reported symptom. The red has to match the ticket: the trigger it describes, and the symptom at the severity it reports. A loop built on a trigger you made up, or showing a milder symptom, such as a slowdown for a reported hang, has found a different bug. Theories wait until the loop matches.
 
-If you can't build a red loop, stop here. Undo your changes, then end with what you tried and what would let the factory reproduce the bug, such as access to an environment, a captured log or a failing input. The factory posts that on the ticket.
+If you can't build a matching red loop, stop here. Undo your changes, then end with what you tried, any different bug you found, and what would let the factory reproduce this one, such as access to an environment, a captured log or a failing input. The factory posts that on the ticket. That report is the finished result of this run.
 
-### 2. Reproduce and minimise
+### 2. Minimise
 
-Confirm the red is the bug the ticket reports, not a different failure nearby. Note the exact symptom: the error message, the wrong output or the timing.
+Note the exact symptom the loop shows: the error message, the wrong output or the timing.
 
-Then minimise: cut inputs, callers, config, data and steps one at a time, rerunning the loop after each cut. Done when every remaining element is load-bearing: removing any one of them turns the loop green.
+Then cut inputs, callers, config, data and steps one at a time, rerunning the loop after each cut. Done when every remaining element is load-bearing: removing any one of them turns the loop green.
 
 ### 3. Hypothesise
 
@@ -46,7 +46,7 @@ If no correct seam exists, that is a finding in itself: the code's structure sto
 
 ### Done when
 
-- [ ] The regression test drives the code path the fix changes and asserts the symptom the ticket reports, so it goes red without the fix. Or **No seam:** in the pull request description explains why there is no regression test.
+- [ ] The regression test drives the code path the fix changes and asserts the symptom the ticket reports, from the trigger it describes and at the severity it reports, so it goes red without the fix. Or **No seam:** in the pull request description explains why there is no regression test.
 - [ ] The fix changes the root cause, not just the place where the symptom shows.
 - [ ] The test command passes.
 - [ ] A grep for `[DEBUG-` finds nothing, and every throwaway harness and fixture is deleted. The regression test and its fixtures stay.
