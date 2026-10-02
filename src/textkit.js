@@ -120,3 +120,66 @@ export function truncate(input, maxLength) {
 
   return `${prefix.join('').trimEnd()}…`;
 }
+
+/**
+ * Centre a string in a field of Unicode code points, putting extra padding on the right.
+ * @example padCenter('ab', 5) // " ab  "
+ * @param {string} input
+ * @param {number} width
+ * @param {string} [fill=' ']
+ * @returns {string}
+ * @throws {RangeError} If fill is not exactly one Unicode code point.
+ */
+export function padCenter(input, width, fill = ' ') {
+  if (typeof fill !== 'string' || [...fill].length !== 1) {
+    throw new RangeError('fill must be exactly one character');
+  }
+
+  const inputLength = [...input].length;
+  if (inputLength >= width) return input;
+
+  const paddingLength = width - inputLength;
+  const leftPaddingLength = Math.floor(paddingLength / 2);
+  const rightPaddingLength = paddingLength - leftPaddingLength;
+  return `${fill.repeat(leftPaddingLength)}${input}${fill.repeat(rightPaddingLength)}`;
+}
+
+/**
+ * Pad a string on the left to a width measured in Unicode code points.
+ * @example padLeftTo('7', 3, '0') // "007"
+ * @param {string} input
+ * @param {number} width
+ * @param {string} [fill=' ']
+ * @returns {string}
+ * @throws {RangeError} If fill is not exactly one Unicode code point.
+ */
+export function padLeftTo(input, width, fill = ' ') {
+  if (typeof fill !== 'string' || [...fill].length !== 1) {
+    throw new RangeError('fill must be exactly one character');
+  }
+
+  const inputLength = [...input].length;
+  if (inputLength >= width) return input;
+
+  return `${fill.repeat(width - inputLength)}${input}`;
+}
+
+/**
+ * Pad a string on the right to a width measured in Unicode code points.
+ * @example padRightTo('ab', 4, '.') // "ab.."
+ * @param {string} input
+ * @param {number} width
+ * @param {string} [fill=' ']
+ * @returns {string}
+ * @throws {RangeError} If fill is not exactly one Unicode code point.
+ */
+export function padRightTo(input, width, fill = ' ') {
+  if (typeof fill !== 'string' || [...fill].length !== 1) {
+    throw new RangeError('fill must be exactly one character');
+  }
+
+  const inputLength = [...input].length;
+  if (inputLength >= width) return input;
+
+  return `${input}${fill.repeat(width - inputLength)}`;
+}
