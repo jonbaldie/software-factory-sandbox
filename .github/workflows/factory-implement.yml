@@ -1,4 +1,5 @@
-name: "1 · Implement"
+# From https://github.com/jonbaldie/software-factory. Rerun its installer to upgrade.
+name: "Factory 1 · Implement"
 
 # An issue labelled `ready-for-agent` becomes a pull request.
 
@@ -29,12 +30,14 @@ jobs:
       ISSUE: ${{ github.event.issue.number || inputs.issue }}
       GH_REPO: ${{ github.repository }}
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      SETUP_COMMAND: ${{ vars.FACTORY_SETUP_COMMAND }}
+      TEST_COMMAND: ${{ vars.FACTORY_TEST_COMMAND }}
     steps:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false # keep the GitHub token out of the agent's sandbox
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@v7 # the agent runs on Node
         with:
           node-version: 22
 
@@ -42,27 +45,37 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          if [ -z "$TEST_COMMAND" ]; then
+            echo "::error::Set the FACTORY_TEST_COMMAND repository variable to the command that runs your tests."
+            exit 1
+          fi
           gh issue edit "$ISSUE" --remove-label ready-for-agent --remove-label agent:failed --add-label agent:working
           gh issue comment "$ISSUE" --body "🏭 The factory picked this up. [Watch the run]($RUN_URL)"
           {
-            cat .github/prompts/implement.md
-            echo
+            cat .github/factory/implement.md
+            printf '\n## Test command\n\n```sh\n%s\n```\n\n' "$TEST_COMMAND"
             gh issue view "$ISSUE" --json number,title,body -q '"## Ticket #\(.number): \(.title)\n\n\(.body)"'
           } > "$RUNNER_TEMP/prompt.md"
 
+      - name: Set up the project
+        if: env.SETUP_COMMAND != ''
+        run: eval "$SETUP_COMMAND"
+
       - name: Agent writes the code
         id: agent
-        uses: ./.github/actions/run-agent
+        uses: jonbaldie/software-factory/run-agent@v1
         with:
           name: implement-issue-${{ env.ISSUE }}
           prompt-file: ${{ runner.temp }}/prompt.md
+          harness: ${{ vars.FACTORY_HARNESS }}
+          model: ${{ vars.FACTORY_MODEL }}
           max-budget-usd: "1.50"
           openrouter-api-key: ${{ secrets.OPENROUTER_API_KEY }}
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
       - name: Tests must pass before a PR is opened
-        run: npm test
+        run: eval "$TEST_COMMAND"
 
       - name: Open the pull request
         env:
@@ -72,6 +85,10 @@ jobs:
           branch="agent/issue-$ISSUE"
           title=$(gh issue view "$ISSUE" --json title -q .title)
 
+          if [ -n "$(git status --porcelain -- .github)" ]; then
+            echo "::error::The agent changed files under .github/, which the factory owns"
+            exit 1
+          fi
           git switch -c "$branch"
           git add -A
           if git diff --cached --quiet; then
@@ -91,7 +108,7 @@ jobs:
           gh issue comment "$ISSUE" --body "🏭 Opened $pr_url"
 
           # Labels added with GITHUB_TOKEN don't trigger workflows, so hand off to the reviewer explicitly.
-          gh workflow run 2-review.yml -f pr="${pr_url##*/}"
+          gh workflow run factory-review.yml -f pr="${pr_url##*/}"
 
       - name: Report failure
         if: failure()
