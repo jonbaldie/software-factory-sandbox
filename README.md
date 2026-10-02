@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { camelCase, collapseWhitespace, isBlank, reverseWords, slugify, titleCase, truncate, wordCount } from './src/textkit.js';
+import { camelCase, collapseWhitespace, isBlank, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from './src/textkit.js';
 ```
 
 ## API
@@ -30,6 +30,31 @@ Returns `true` when the string is empty or contains only whitespace; otherwise r
 
 ```js
 isBlank(' \t\n '); // true
+```
+
+### `padCenter(input, width, fill = ' ')`
+
+Centres `input` in a field of `width` Unicode code points. If the padding cannot be split evenly, the extra fill character goes on the right. The default fill is a space; a `fill` other than exactly one Unicode code point causes a `RangeError`. Input that is already at least `width` code points long is returned unchanged.
+
+```js
+padCenter('ab', 6, '*'); // "**ab**"
+padCenter('ab', 5);      // " ab  "
+```
+
+### `padLeftTo(input, width, fill = ' ')`
+
+Pads the left side of `input` to `width` Unicode code points. The default fill is a space; a `fill` other than exactly one Unicode code point causes a `RangeError`. Input that is already at least `width` code points long is returned unchanged.
+
+```js
+padLeftTo('7', 3, '0'); // "007"
+```
+
+### `padRightTo(input, width, fill = ' ')`
+
+Pads the right side of `input` to `width` Unicode code points. The default fill is a space; a `fill` other than exactly one Unicode code point causes a `RangeError`. Input that is already at least `width` code points long is returned unchanged.
+
+```js
+padRightTo('ab', 4, '.'); // "ab.."
 ```
 
 ### `reverseWords(input)`

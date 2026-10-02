@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { camelCase, collapseWhitespace, isBlank, reverseWords, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { camelCase, collapseWhitespace, isBlank, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
 
 test('collapseWhitespace replaces runs of whitespace with one space and trims ends', () => {
   assert.equal(collapseWhitespace('  a \t b\n\nc  '), 'a b c');
@@ -12,6 +12,59 @@ test('collapseWhitespace returns empty for empty or whitespace-only input', () =
 
 test('isBlank distinguishes empty and whitespace-only strings from nonblank input', () => {
   assert.deepEqual([isBlank(''), isBlank(' \t\n '), isBlank('text')], [true, true, false]);
+});
+
+test('padCenter centres input and puts an uneven extra fill character on the right', () => {
+  assert.equal(padCenter('ab', 6, '*'), '**ab**');
+  assert.equal(padCenter('ab', 5), ' ab  ');
+});
+
+test('padCenter handles empty and Unicode strings and leaves fitting strings unchanged', () => {
+  assert.equal(padCenter('', 3, '*'), '***');
+  assert.equal(padCenter('👋', 3, '.'), '.👋.');
+  assert.equal(padCenter('x', 3, '👋'), '👋x👋');
+  assert.equal(padCenter('abc', 3, '*'), 'abc');
+  assert.equal(padCenter('longer', 3, '*'), 'longer');
+});
+
+test('padCenter rejects fills that are not exactly one character', () => {
+  assert.throws(() => padCenter('ab', 5, ''), RangeError);
+  assert.throws(() => padCenter('ab', 5, '**'), RangeError);
+  assert.throws(() => padCenter('longer', 3, 1), RangeError);
+});
+
+test('padLeftTo pads the input on the left', () => {
+  assert.equal(padLeftTo('7', 3, '0'), '007');
+});
+
+test('padLeftTo handles empty and Unicode strings and leaves fitting strings unchanged', () => {
+  assert.equal(padLeftTo('', 3, '0'), '000');
+  assert.equal(padLeftTo('👋', 2, '0'), '0👋');
+  assert.equal(padLeftTo('abc', 3, '0'), 'abc');
+  assert.equal(padLeftTo('longer', 3, '0'), 'longer');
+});
+
+test('padLeftTo rejects fills that are not exactly one character', () => {
+  assert.throws(() => padLeftTo('7', 3, ''), RangeError);
+  assert.throws(() => padLeftTo('7', 3, '00'), RangeError);
+  assert.throws(() => padLeftTo('longer', 3, null), RangeError);
+});
+
+test('padRightTo pads the input on the right', () => {
+  assert.equal(padRightTo('ab', 4, '.'), 'ab..');
+});
+
+test('padRightTo handles empty and Unicode strings and leaves fitting strings unchanged', () => {
+  assert.equal(padRightTo('', 2, '.'), '..');
+  assert.equal(padRightTo('👋', 2, '.'), '👋.');
+  assert.equal(padRightTo('abc', 3, '.'), 'abc');
+  assert.equal(padRightTo('longer', 3, '.'), 'longer');
+});
+
+test('padRightTo rejects fills that are not exactly one character', () => {
+  assert.throws(() => padRightTo('ab', 4, ''), RangeError);
+  assert.throws(() => padRightTo('ab', 4, '..'), RangeError);
+  assert.throws(() => padRightTo('longer', 3, null), RangeError);
 });
 
 test('reverseWords reverses whitespace-separated words with single spaces', () => {
