@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { camelCase, collapseWhitespace, initials, isBlank, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { camelCase, collapseWhitespace, countOccurrences, initials, isBlank, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
 
 test('collapseWhitespace replaces runs of whitespace with one space and trims ends', () => {
   assert.equal(collapseWhitespace('  a \t b\n\nc  '), 'a b c');
@@ -202,4 +202,20 @@ test('wordCount returns zero when no words are present', () => {
 
 test('wordCount handles apostrophes, Unicode, numbers, and mixed whitespace', () => {
   assert.equal(wordCount("L’amour and don't eat crème-brûlée; 42."), 6);
+});
+
+test('countOccurrences counts matches from left to right', () => {
+  assert.equal(countOccurrences('banana', 'an'), 2);
+});
+
+test('countOccurrences does not count overlapping matches', () => {
+  assert.equal(countOccurrences('aaaa', 'aa'), 2);
+});
+
+test('countOccurrences returns zero when the search is absent', () => {
+  assert.equal(countOccurrences('abc', 'x'), 0);
+});
+
+test('countOccurrences returns zero for an empty search', () => {
+  assert.equal(countOccurrences('abc', ''), 0);
 });
