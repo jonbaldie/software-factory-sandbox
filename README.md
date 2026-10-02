@@ -3,10 +3,18 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { slugify, titleCase, truncate, wordCount } from './src/textkit.js';
+import { camelCase, slugify, titleCase, truncate, wordCount } from './src/textkit.js';
 ```
 
 ## API
+
+### `camelCase(input)`
+
+Joins words separated by whitespace, hyphens, or underscores into camelCase. It lowercases each word, capitalises the first letter of every word after the first, and ignores repeated or leading and trailing separators.
+
+```js
+camelCase('Hello-World_foo bar'); // "helloWorldFooBar"
+```
 
 ### `slugify(input)`
 

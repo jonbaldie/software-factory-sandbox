@@ -14,6 +14,22 @@ export function slugify(input) {
 }
 
 /**
+ * Join words separated by whitespace, hyphens, or underscores into camelCase.
+ * @example camelCase('Hello-World_foo bar') // 'helloWorldFooBar'
+ * @param {string} input
+ * @returns {string}
+ */
+export function camelCase(input) {
+  const words = input
+    .split(/[\s_-]+/u)
+    .filter(Boolean)
+    .map((word) => word.toLowerCase());
+  return words
+    .map((word, index) => index === 0 ? word : word[0].toUpperCase() + word.slice(1))
+    .join('');
+}
+
+/**
  * Capitalise the first letter of every word and each hyphenated part.
  * Apostrophes are treated as part of a word.
  * @example titleCase("hello world") // "Hello World"
