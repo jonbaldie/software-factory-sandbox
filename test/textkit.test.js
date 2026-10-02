@@ -1,6 +1,22 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from '../src/textkit.js';
+
+test('snakeCase lowercases words and joins them with underscores', () => {
+  assert.equal(snakeCase('Hello World'), 'hello_world');
+});
+
+test('snakeCase treats punctuation and repeated whitespace as word separators', () => {
+  assert.equal(snakeCase('  Already-split  words '), 'already_split_words');
+});
+
+test('snakeCase returns empty for empty input', () => {
+  assert.equal(snakeCase(''), '');
+});
+
+test('snakeCase keeps Unicode letters and digits in words', () => {
+  assert.equal(snakeCase('Crème-東京 ٤٢!'), 'crème_東京_٤٢');
+});
 
 test('collapseWhitespace replaces runs of whitespace with one space and trims ends', () => {
   assert.equal(collapseWhitespace('  a \t b\n\nc  '), 'a b c');

@@ -86,6 +86,16 @@ export function slugify(input) {
 }
 
 /**
+ * Convert runs of letters and numbers into lowercase words joined by underscores.
+ * @example snakeCase('Hello World') // "hello_world"
+ * @param {string} input
+ * @returns {string}
+ */
+export function snakeCase(input) {
+  return input.match(/[\p{L}\p{N}]+/gu)?.map((word) => word.toLowerCase()).join('_') ?? '';
+}
+
+/**
  * Capitalise the first letter of every word and each hyphenated part.
  * Apostrophes are treated as part of a word.
  * @example titleCase("hello world") // "Hello World"
