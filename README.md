@@ -18,7 +18,7 @@ slugify('Crème Brûlée!'); // "creme-brulee"
 
 ### `titleCase(input)`
 
-Capitalises the first letter of every word.
+Capitalises the first letter of every word and each hyphenated part, while treating apostrophes as part of a word.
 
 ```js
 titleCase('hello world'); // "Hello World"

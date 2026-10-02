@@ -14,13 +14,21 @@ export function slugify(input) {
 }
 
 /**
- * Capitalise the first letter of every word.
+ * Capitalise the first letter of every word and each hyphenated part.
+ * Apostrophes are treated as part of a word.
  * @example titleCase("hello world") // "Hello World"
  * @param {string} input
  * @returns {string}
  */
 export function titleCase(input) {
-  return input.replace(/\b\w/g, (c) => c.toUpperCase());
+  return input.replace(/\b\w/g, (c, index) => {
+    const apostrophe = input[index - 1];
+    const previousCharacter = input[index - 2];
+    const followsApostropheInWord =
+      (apostrophe === "'" || apostrophe === '’') && /\w/.test(previousCharacter ?? '');
+
+    return followsApostropheInWord ? c : c.toUpperCase();
+  });
 }
 
 // TODO(factory): Add `truncate(input, maxLength)` that shortens long strings at a word boundary and appends "…".
