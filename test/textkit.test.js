@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { camelCase, kebabCase, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { camelCase, kebabCase, pascalCase, snakeCase, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
 
 test('kebabCase converts spaces and lower-to-upper boundaries to lowercase hyphenated words', () => {
   assert.deepEqual([kebabCase('Hello World'), kebabCase('fooBarBaz')], ['hello-world', 'foo-bar-baz']);
@@ -12,6 +12,37 @@ test('kebabCase treats repeated separators as one and drops empty words', () => 
 
 test('kebabCase returns empty for empty and whitespace-only input', () => {
   assert.deepEqual([kebabCase(''), kebabCase(' \t\n ')], ['', '']);
+});
+
+test('snakeCase converts spaces and lower-to-upper boundaries to lowercase underscore-separated words', () => {
+  assert.deepEqual([snakeCase('Hello World'), snakeCase('fooBarBaz')], ['hello_world', 'foo_bar_baz']);
+});
+
+test('snakeCase treats repeated separators as one and drops empty words', () => {
+  assert.equal(snakeCase('  --foo__BAR--  '), 'foo_bar');
+});
+
+test('snakeCase returns empty for empty and whitespace-only input', () => {
+  assert.deepEqual([snakeCase(''), snakeCase(' \t\n ')], ['', '']);
+});
+
+test('pascalCase joins words and capitalises each word', () => {
+  assert.deepEqual(
+    [pascalCase('hello world'), pascalCase('foo-bar_baz'), pascalCase('fooBarBaz')],
+    ['HelloWorld', 'FooBarBaz', 'FooBarBaz'],
+  );
+});
+
+test('pascalCase capitalises supplementary Unicode letters', () => {
+  assert.equal(pascalCase('\u{10428}word'), '\u{10400}word');
+});
+
+test('pascalCase treats repeated separators as one and drops empty words', () => {
+  assert.equal(pascalCase('  --foo__BAR--  '), 'FooBar');
+});
+
+test('pascalCase returns empty for empty and whitespace-only input', () => {
+  assert.deepEqual([pascalCase(''), pascalCase(' \t\n ')], ['', '']);
 });
 
 test('camelCase joins words with a lowercase first word and camel-cased remainder', () => {

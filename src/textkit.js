@@ -33,6 +33,31 @@ export function kebabCase(input) {
 }
 
 /**
+ * Convert a string to snake_case, splitting on separators and lower-to-upper boundaries.
+ * @example snakeCase('Hello World') // "hello_world"
+ * @param {string} input
+ * @returns {string}
+ */
+export function snakeCase(input) {
+  return splitWords(input).map((word) => word.toLowerCase()).join('_');
+}
+
+/**
+ * Convert a string to PascalCase, splitting on separators and lower-to-upper boundaries.
+ * @example pascalCase('hello world') // "HelloWorld"
+ * @param {string} input
+ * @returns {string}
+ */
+export function pascalCase(input) {
+  return splitWords(input)
+    .map((word) => {
+      const [first, ...rest] = word.toLowerCase();
+      return first.toUpperCase() + rest.join('');
+    })
+    .join('');
+}
+
+/**
  * Turn a string into a URL-safe slug.
  * @example slugify("Hello, World!") // "hello-world"
  * @param {string} input

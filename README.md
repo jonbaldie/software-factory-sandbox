@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { camelCase, slugify, titleCase, truncate, wordCount } from './src/textkit.js';
+import { camelCase, kebabCase, pascalCase, snakeCase, slugify, titleCase, truncate, wordCount } from './src/textkit.js';
 ```
 
 ## API
@@ -14,6 +14,30 @@ Joins words into camelCase, splitting at whitespace, hyphens, and underscores. E
 
 ```js
 camelCase('Hello-World_foo bar'); // "helloWorldFooBar"
+```
+
+### `kebabCase(input)`
+
+Converts words to lowercase and joins them with hyphens. Words split on whitespace, hyphens, underscores, and lower-to-upper case boundaries; repeated separators are ignored, and empty or whitespace-only input returns `""`.
+
+```js
+kebabCase('fooBarBaz'); // "foo-bar-baz"
+```
+
+### `snakeCase(input)`
+
+Converts words to lowercase and joins them with underscores. Words split on whitespace, hyphens, underscores, and lower-to-upper case boundaries; repeated separators are ignored, and empty or whitespace-only input returns `""`.
+
+```js
+snakeCase('Hello World'); // "hello_world"
+```
+
+### `pascalCase(input)`
+
+Capitalises each word and joins them without separators. Words split on whitespace, hyphens, underscores, and lower-to-upper case boundaries; repeated separators are ignored, and empty or whitespace-only input returns `""`.
+
+```js
+pascalCase('foo-bar_baz'); // "FooBarBaz"
 ```
 
 ### `slugify(input)`
