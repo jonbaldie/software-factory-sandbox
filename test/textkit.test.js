@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { slugify, titleCase } from '../src/textkit.js';
+import { slugify, titleCase, wordCount } from '../src/textkit.js';
 
 test('slugify lowercases and hyphenates', () => {
   assert.equal(slugify('Hello, World!'), 'hello-world');
@@ -30,4 +30,18 @@ test('titleCase keeps apostrophes within words and capitalises hyphenated parts'
 
 test('titleCase handles an empty string', () => {
   assert.equal(titleCase(''), '');
+});
+
+test('wordCount counts words and treats hyphenated words as one', () => {
+  assert.equal(wordCount('A well-known author wrote the story.'), 6);
+});
+
+test('wordCount returns zero when no words are present', () => {
+  assert.equal(wordCount(''), 0);
+  assert.equal(wordCount(' \t\n '), 0);
+  assert.equal(wordCount('...---!!!'), 0);
+});
+
+test('wordCount handles apostrophes, Unicode, numbers, and mixed whitespace', () => {
+  assert.equal(wordCount("L’amour and don't eat crème-brûlée; 42."), 6);
 });

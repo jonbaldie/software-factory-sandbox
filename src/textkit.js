@@ -31,5 +31,14 @@ export function titleCase(input) {
   });
 }
 
+/**
+ * Count words, treating hyphenated and apostrophe-connected words as one.
+ * @example wordCount('well-known phrase') // 2
+ * @param {string} input
+ * @returns {number}
+ */
+export function wordCount(input) {
+  return input.match(/[\p{L}\p{N}\p{M}]+(?:[-'’][\p{L}\p{N}\p{M}]+)*/gu)?.length ?? 0;
+}
+
 // TODO(factory): Add `truncate(input, maxLength)` that shortens long strings at a word boundary and appends "…".
-// TODO(factory): Add `wordCount(input)` that counts words, treating hyphenated words as one word.
