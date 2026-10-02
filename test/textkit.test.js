@@ -10,8 +10,16 @@ test('collapseWhitespace returns empty for empty or whitespace-only input', () =
   assert.deepEqual([collapseWhitespace(''), collapseWhitespace(' \t\n ')], ['', '']);
 });
 
-test('isBlank distinguishes empty and whitespace-only strings from nonblank input', () => {
-  assert.deepEqual([isBlank(''), isBlank(' \t\n '), isBlank('text')], [true, true, false]);
+test('isBlank returns true for an empty string', () => {
+  assert.equal(isBlank(''), true);
+});
+
+test('isBlank returns true for a whitespace-only string', () => {
+  assert.equal(isBlank('  \t\n'), true);
+});
+
+test('isBlank returns false for nonblank text surrounded by whitespace', () => {
+  assert.equal(isBlank(' a '), false);
 });
 
 test('isPalindrome ignores case and non-alphanumeric characters', () => {
