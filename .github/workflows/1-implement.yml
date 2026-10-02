@@ -1,6 +1,6 @@
 name: "1 · Implement"
 
-# An issue labelled `agent:ready` becomes a pull request.
+# An issue labelled `ready-for-agent` becomes a pull request.
 
 on:
   issues:
@@ -22,7 +22,7 @@ concurrency:
 
 jobs:
   implement:
-    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'agent:ready'
+    if: github.event_name == 'workflow_dispatch' || github.event.label.name == 'ready-for-agent'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -42,7 +42,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh issue edit "$ISSUE" --remove-label agent:ready --remove-label agent:failed --add-label agent:working
+          gh issue edit "$ISSUE" --remove-label ready-for-agent --remove-label agent:failed --add-label agent:working
           gh issue comment "$ISSUE" --body "🏭 The factory picked this up. [Watch the run]($RUN_URL)"
           {
             cat .github/prompts/implement.md
@@ -98,4 +98,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh issue edit "$ISSUE" --remove-label agent:working --add-label agent:failed
-          gh issue comment "$ISSUE" --body "💥 The factory failed on this ticket. [See the run]($RUN_URL). Re-add \`agent:ready\` to retry."
+          gh issue comment "$ISSUE" --body "💥 The factory failed on this ticket. [See the run]($RUN_URL). Re-add \`ready-for-agent\` to retry."

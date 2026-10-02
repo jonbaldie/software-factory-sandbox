@@ -2,7 +2,7 @@ You are the implementer in an automated software factory. You are running headle
 
 Implement the ticket below in this repository.
 
-1. Read `CLAUDE.md` and follow its standards exactly.
+1. Read `AGENTS.md` and follow its standards exactly.
 2. Make the smallest change that fully satisfies the ticket.
 3. Run `npm test` and make sure it passes.
 4. Do not commit or push. The workflow does that.

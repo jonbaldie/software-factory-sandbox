@@ -1,6 +1,6 @@
 name: "2 · Review"
 
-# A reviewer agent checks a factory PR against its ticket and CLAUDE.md.
+# A reviewer agent checks a factory PR against its ticket and AGENTS.md.
 # Approve: merge. Request changes: hand to the fixer, up to MAX_ROUNDS, then escalate to a human.
 
 on:
@@ -124,7 +124,7 @@ jobs:
             # Run outside the checkout so gh doesn't try to switch local branches.
             (cd "$RUNNER_TEMP" && gh pr merge "$PR" --squash --delete-branch)
           elif [ "$round" -ge "$MAX_ROUNDS" ]; then
-            gh pr edit "$PR" --add-label agent:needs-human
+            gh pr edit "$PR" --add-label ready-for-human
           else
             gh pr edit "$PR" --add-label agent:changes-requested
             gh workflow run 3-fix.yml -f pr="$PR"

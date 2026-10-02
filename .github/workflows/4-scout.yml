@@ -34,9 +34,9 @@ jobs:
               echo "- Already filed: $title" >> "$GITHUB_STEP_SUMMARY"
               continue
             fi
-            printf 'Found by the scout at %s/%s/blob/%s/%s#L%s\n\nA human should check this ticket, then add `agent:ready` to have the factory build it.\n' \
+            printf 'Found by the scout at %s/%s/blob/%s/%s#L%s\n\nA human should check this ticket, then add `ready-for-agent` to have the factory build it.\n' \
               "$GITHUB_SERVER_URL" "$GH_REPO" "$GITHUB_SHA" "$file" "$line" > "$RUNNER_TEMP/body.md"
-            url=$(gh issue create --title "$title" --body-file "$RUNNER_TEMP/body.md" --label factory:proposed)
+            url=$(gh issue create --title "$title" --body-file "$RUNNER_TEMP/body.md" --label needs-triage)
             echo "- Filed $url: $title" >> "$GITHUB_STEP_SUMMARY"
           done
 
@@ -48,10 +48,10 @@ jobs:
             echo
             echo "| Queue | Open |"
             echo "|---|---|"
-            for label in factory:proposed agent:ready agent:working agent:failed; do
+            for label in needs-triage ready-for-agent agent:working agent:failed; do
               echo "| Issues labelled \`$label\` | $(gh issue list --label "$label" --json number -q length) |"
             done
-            for label in agent:review agent:changes-requested agent:needs-human agent:failed; do
+            for label in agent:review agent:changes-requested ready-for-human agent:failed; do
               echo "| PRs labelled \`$label\` | $(gh pr list --label "$label" --json number -q length) |"
             done
             since=$(date -u -d '7 days ago' +%F)

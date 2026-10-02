@@ -5,15 +5,15 @@ This repo is a working example of the idea in [this post by Matt Pocock](https:/
 ```mermaid
 flowchart LR
   you(["🧑 You"]) -->|write a ticket| issue["Issue"]
-  scout["4 · Scout<br/>(daily cron)"] -->|files TODOs as| proposed["Issue<br/>factory:proposed"]
+  scout["4 · Scout<br/>(daily cron)"] -->|files TODOs as| proposed["Issue<br/>needs-triage"]
   proposed -->|you check it| issue
-  issue -->|add label| ready["agent:ready"]
+  issue -->|add label| ready["ready-for-agent"]
   ready --> implement["1 · Implement<br/>agent writes code, opens PR"]
   implement --> review["2 · Review<br/>tests + agent reviewer"]
   review -->|approve| merged["agent:approved<br/>squash-merged, issue closed"]
   review -->|request changes| fix["3 · Fix<br/>agent addresses feedback"]
   fix -->|agent:review| review
-  review -->|3rd rejection| human["agent:needs-human"]
+  review -->|3rd rejection| human["ready-for-human"]
 ```
 
 ## How it maps to the post
@@ -23,22 +23,26 @@ flowchart LR
 | 1. Free sandboxes for public repos | Every agent runs on a fresh `ubuntu-latest` runner, with `bypassPermissions`. The runner is the sandbox, and it's thrown away afterwards. |
 | 2. You already have a login | Permissions are GitHub's own: only people with triage access can add labels, so only they can start the factory. |
 | 3. Tickets as issues | The implementer's prompt is [`.github/prompts/implement.md`](.github/prompts/implement.md) plus the issue title and body. |
-| 4. Labels trigger actions, which create PRs | Adding `agent:ready` runs [`1-implement.yml`](.github/workflows/1-implement.yml), which opens a PR. |
+| 4. Labels trigger actions, which create PRs | Adding `ready-for-agent` runs [`1-implement.yml`](.github/workflows/1-implement.yml), which opens a PR. |
 | 5. Actions apply labels, which create loops | Review → fix → review, in [`2-review.yml`](.github/workflows/2-review.yml) and [`3-fix.yml`](.github/workflows/3-fix.yml). There's a round limit so it can't loop forever. |
 | 6. Cron jobs for daily work | [`4-scout.yml`](.github/workflows/4-scout.yml) files `TODO(factory):` comments as tickets and posts a queue report. |
 | 7. Simple observability | Each agent run streams a readable log, writes its model, turns and cost to the job summary, and uploads its full transcript as an artifact. Each issue and PR gets a comment linking to its run. |
 
 ## Labels
 
+The first five are the default triage labels used by [Matt Pocock's skills](https://github.com/mattpocock/skills), such as `/triage` (see [`docs/agents/triage-labels.md`](docs/agents/triage-labels.md)). The `agent:*` labels show where a ticket is in the factory.
+
 | Label | On | Meaning | Set by |
 |---|---|---|---|
-| `factory:proposed` | issue | The scout found this. It needs a human check. | scout |
-| `agent:ready` | issue | Go. Starts **1 · Implement**. | you |
+| `needs-triage` | issue | Someone needs to check this ticket. | scout, or anyone filing an issue |
+| `needs-info` | issue | Waiting on the reporter for more information. | you, or `/triage` |
+| `ready-for-agent` | issue | Go. Starts **1 · Implement**. | you, or `/triage` |
+| `ready-for-human` | issue or PR | A human has to do this one. The factory adds it to a PR after the reviewer's third rejection. | you, `/triage`, or the factory |
+| `wontfix` | issue | Won't be done. | you, or `/triage` |
 | `agent:working` | issue | The implementer is on it. | factory |
 | `agent:review` | PR | Starts **2 · Review**. | factory, or you to re-review |
 | `agent:changes-requested` | PR | Starts **3 · Fix**. | factory, or you, with a comment saying what to change |
 | `agent:approved` | PR | The reviewer approved and the factory merged it. | factory |
-| `agent:needs-human` | PR | The reviewer rejected it 3 times. Your turn. | factory |
 | `agent:failed` | either | A stage crashed. The comment links to the run. | factory |
 
 ## The catch: `GITHUB_TOKEN` doesn't trigger workflows
@@ -57,7 +61,7 @@ If you'd rather have labels alone drive everything, use a GitHub App token or a 
 - **The reviewer is read-only**: it runs with `--allowedTools Read,Glob,Grep`.
 - **Script injection**: issue text reaches the agent through files and environment variables, never through `${{ }}` in shell scripts.
 - **Concurrency**: one run per issue or PR at a time.
-- **Prompt injection**: anyone can open an issue on a public repo, but only you can add `agent:ready`. Read a ticket before you label it.
+- **Prompt injection**: anyone can open an issue on a public repo, but only you can add `ready-for-agent`. Read a ticket before you label it.
 
 ## Setup
 
@@ -66,4 +70,4 @@ If you'd rather have labels alone drive everything, use a GitHub App token or a 
    - `ANTHROPIC_API_KEY`, from the Anthropic Console.
 2. Settings → Actions → General: tick **Allow GitHub Actions to create and approve pull requests**.
 3. Create the labels above.
-4. Open an issue and add `agent:ready`.
+4. Open an issue and add `ready-for-agent`.
