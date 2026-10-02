@@ -41,4 +41,39 @@ export function wordCount(input) {
   return input.match(/[\p{L}\p{N}\p{M}]+(?:[-'’][\p{L}\p{N}\p{M}]+)*/gu)?.length ?? 0;
 }
 
-// TODO(factory): Add `truncate(input, maxLength)` that shortens long strings at a word boundary and appends "…".
+/**
+ * Shorten a string at a whitespace-delimited word boundary, appending an ellipsis.
+ * Length is counted in Unicode code points, including the ellipsis.
+ * @example truncate('The quick brown fox', 12) // "The quick…"
+ * @param {string} input
+ * @param {number} maxLength
+ * @returns {string}
+ * @throws {RangeError} If maxLength is not a positive integer.
+ */
+export function truncate(input, maxLength) {
+  if (!Number.isInteger(maxLength) || maxLength < 1) {
+    throw new RangeError('maxLength must be a positive integer');
+  }
+
+  const characters = [...input];
+  if (characters.length <= maxLength) return input;
+
+  const prefix = characters.slice(0, maxLength - 1);
+  const nextCharacter = characters[maxLength - 1];
+  if (nextCharacter && !/\s/u.test(nextCharacter)) {
+    let lastWhitespace = -1;
+    for (let index = prefix.length - 1; index >= 0; index--) {
+      if (/\s/u.test(prefix[index])) {
+        lastWhitespace = index;
+        break;
+      }
+    }
+
+    if (lastWhitespace !== -1) {
+      const wholeWords = prefix.slice(0, lastWhitespace).join('').trimEnd();
+      if (wholeWords) return `${wholeWords}…`;
+    }
+  }
+
+  return `${prefix.join('').trimEnd()}…`;
+}
