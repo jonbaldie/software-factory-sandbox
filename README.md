@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { camelCase, collapseWhitespace, countOccurrences, isBlank, isPalindrome, initials, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from './src/textkit.js';
+import { camelCase, collapseWhitespace, countOccurrences, isBlank, isPalindrome, initials, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from './src/textkit.js';
 ```
 
 ## API
@@ -97,6 +97,14 @@ Turns a string into a URL-safe slug: lowercases it, strips accents, and replaces
 
 ```js
 slugify('Crème Brûlée!'); // "creme-brulee"
+```
+
+### `snakeCase(input)`
+
+Converts runs of Unicode letters and numbers to lowercase words joined by underscores. Every other character separates words, and leading, trailing, or repeated separators are ignored. Empty input returns an empty string.
+
+```js
+snakeCase('  Already-split  words '); // "already_split_words"
 ```
 
 ### `titleCase(input)`
