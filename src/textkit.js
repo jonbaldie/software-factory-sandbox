@@ -99,6 +99,25 @@ export function wordCount(input) {
 }
 
 /**
+ * Count non-overlapping occurrences of a search string from left to right.
+ * @example countOccurrences('banana', 'an') // 2
+ * @param {string} input
+ * @param {string} search
+ * @returns {number}
+ */
+export function countOccurrences(input, search) {
+  if (search.length === 0) return 0;
+
+  let count = 0;
+  let position = input.indexOf(search);
+  while (position !== -1) {
+    count++;
+    position = input.indexOf(search, position + search.length);
+  }
+  return count;
+}
+
+/**
  * Shorten a string at a whitespace-delimited word boundary, appending an ellipsis.
  * Length is counted in Unicode code points, including the ellipsis.
  * @example truncate('The quick brown fox', 12) // "The quick…"

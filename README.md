@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { camelCase, collapseWhitespace, isBlank, initials, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from './src/textkit.js';
+import { camelCase, collapseWhitespace, countOccurrences, isBlank, initials, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from './src/textkit.js';
 ```
 
 ## API
@@ -14,6 +14,14 @@ Joins words into camelCase, splitting at whitespace, hyphens, and underscores. E
 
 ```js
 camelCase('Hello-World_foo bar'); // "helloWorldFooBar"
+```
+
+### `countOccurrences(input, search)`
+
+Counts occurrences of `search` in `input` from left to right without counting overlapping matches. An empty search string returns `0`.
+
+```js
+countOccurrences('banana', 'an'); // 2
 ```
 
 ### `collapseWhitespace(input)`
