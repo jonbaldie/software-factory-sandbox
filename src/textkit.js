@@ -19,6 +19,20 @@ export function isBlank(input) {
 }
 
 /**
+ * Return the uppercase first letter of each whitespace-separated word.
+ * @example initials('Ada Lovelace') // "AL"
+ * @example initials('Ada Lovelace', '.') // "A.L."
+ * @param {string} input
+ * @param {string} [separator='']
+ * @returns {string}
+ */
+export function initials(input, separator = '') {
+  return (input.match(/\S+/gu) ?? [])
+    .map((word) => `${[...word][0].toUpperCase()}${separator}`)
+    .join('');
+}
+
+/**
  * Reverse the order of whitespace-separated words, joining them with single spaces.
  * @example reverseWords('one  two three') // "three two one"
  * @param {string} input

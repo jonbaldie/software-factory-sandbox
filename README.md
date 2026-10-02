@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { camelCase, collapseWhitespace, isBlank, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from './src/textkit.js';
+import { camelCase, collapseWhitespace, isBlank, initials, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from './src/textkit.js';
 ```
 
 ## API
@@ -30,6 +30,15 @@ Returns `true` when the string is empty or contains only whitespace; otherwise r
 
 ```js
 isBlank(' \t\n '); // true
+```
+
+### `initials(input, separator = '')`
+
+Returns the uppercase first character of each whitespace-separated word. Any run of whitespace separates words. `separator` is appended after every initial, including the last, and defaults to an empty string. Empty input returns an empty string.
+
+```js
+initials('Ada Lovelace');      // "AL"
+initials('Ada Lovelace', '.'); // "A.L."
 ```
 
 ### `padCenter(input, width, fill = ' ')`

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { camelCase, collapseWhitespace, isBlank, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { camelCase, collapseWhitespace, initials, isBlank, padCenter, padLeftTo, padRightTo, reverseWords, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
 
 test('collapseWhitespace replaces runs of whitespace with one space and trims ends', () => {
   assert.equal(collapseWhitespace('  a \t b\n\nc  '), 'a b c');
@@ -12,6 +12,30 @@ test('collapseWhitespace returns empty for empty or whitespace-only input', () =
 
 test('isBlank distinguishes empty and whitespace-only strings from nonblank input', () => {
   assert.deepEqual([isBlank(''), isBlank(' \t\n '), isBlank('text')], [true, true, false]);
+});
+
+test('initials uppercases and joins the first letter of each word', () => {
+  assert.equal(initials('Ada Lovelace'), 'AL');
+});
+
+test('initials handles repeated and surrounding spaces', () => {
+  assert.equal(initials('  grace   brewster murray hopper '), 'GBMH');
+});
+
+test('initials treats tabs and line breaks as word separators', () => {
+  assert.equal(initials('Ada\tLovelace\nByron'), 'ALB');
+});
+
+test('initials returns empty for empty input', () => {
+  assert.equal(initials(''), '');
+});
+
+test('initials uppercases accented Unicode letters', () => {
+  assert.equal(initials('élan vital'), 'ÉV');
+});
+
+test('initials appends the separator after every initial', () => {
+  assert.equal(initials('Ada Lovelace', '.'), 'A.L.');
 });
 
 test('padCenter centres input and puts an uneven extra fill character on the right', () => {
