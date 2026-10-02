@@ -22,6 +22,12 @@ test('titleCase capitalises each word', () => {
   assert.equal(titleCase('hello world'), 'Hello World');
 });
 
+test('titleCase capitalises words beginning with accented letters', () => {
+  assert.equal(titleCase('élan vital'), 'Élan Vital');
+  assert.equal(titleCase('über cool'), 'Über Cool');
+  assert.equal(titleCase('éa'), 'Éa');
+});
+
 test('titleCase keeps apostrophes within words and capitalises hyphenated parts', () => {
   assert.equal(titleCase("don't stop"), "Don't Stop");
   assert.equal(titleCase('well-known fact'), 'Well-Known Fact');

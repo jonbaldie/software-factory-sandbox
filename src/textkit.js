@@ -21,14 +21,10 @@ export function slugify(input) {
  * @returns {string}
  */
 export function titleCase(input) {
-  return input.replace(/\b\w/g, (c, index) => {
-    const apostrophe = input[index - 1];
-    const previousCharacter = input[index - 2];
-    const followsApostropheInWord =
-      (apostrophe === "'" || apostrophe === '’') && /\w/.test(previousCharacter ?? '');
-
-    return followsApostropheInWord ? c : c.toUpperCase();
-  });
+  return input.replace(
+    /(?<![\p{L}\p{M}\p{N}_]['’])(?<![\p{L}\p{M}\p{N}_])\p{L}/gu,
+    (c) => c.toUpperCase(),
+  );
 }
 
 /**
