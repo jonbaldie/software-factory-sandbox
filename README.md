@@ -47,3 +47,5 @@ Counts words made from Unicode letters or numbers. Internal hyphens and straight
 ```js
 wordCount('well-known phrase'); // 2
 ```
+
+Run `npm test` to run the tests.
