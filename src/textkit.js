@@ -90,12 +90,3 @@ export function truncate(input, maxLength) {
 
   return `${prefix.join('').trimEnd()}…`;
 }
-
-/**
- * Do nothing and return undefined.
- * @example noop() // undefined
- * @returns {undefined}
- */
-export function noop() {
-  return undefined;
-}

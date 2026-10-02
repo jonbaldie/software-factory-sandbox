@@ -1,17 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { camelCase, noop, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
-
-test('noop returns undefined', () => {
-  assert.equal(noop(), undefined);
-});
-
-test('noop ignores empty-string and unusual inputs without changing them', () => {
-  const unusualInput = { nested: ['value'] };
-  assert.equal(noop(''), undefined);
-  assert.equal(noop(unusualInput), undefined);
-  assert.deepEqual(unusualInput, { nested: ['value'] });
-});
+import { camelCase, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
 
 test('camelCase joins words with a lowercase first word and camel-cased remainder', () => {
   assert.equal(camelCase('hello world'), 'helloWorld');
