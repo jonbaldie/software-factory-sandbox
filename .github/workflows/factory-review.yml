@@ -1,4 +1,5 @@
-name: "2 · Review"
+# From https://github.com/jonbaldie/software-factory. Rerun its installer to upgrade.
+name: "Factory 2 · Review"
 
 # A reviewer agent checks a factory PR against its ticket and AGENTS.md.
 # Approve: merge. Request changes: hand to the fixer, up to MAX_ROUNDS, then escalate to a human.
@@ -31,6 +32,8 @@ jobs:
       MAX_ROUNDS: 3
       GH_REPO: ${{ github.repository }}
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      SETUP_COMMAND: ${{ vars.FACTORY_SETUP_COMMAND }}
+      TEST_COMMAND: ${{ vars.FACTORY_TEST_COMMAND }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -38,14 +41,22 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@v7 # the agent runs on Node
         with:
           node-version: 22
+
+      - name: Set up the project
+        if: env.SETUP_COMMAND != ''
+        run: eval "$SETUP_COMMAND"
 
       - name: Run the tests
         id: tests
         run: |
-          if npm test > "$RUNNER_TEMP/tests.txt" 2>&1; then passed=true; else passed=false; fi
+          if [ -z "$TEST_COMMAND" ]; then
+            echo "::error::Set the FACTORY_TEST_COMMAND repository variable to the command that runs your tests."
+            exit 1
+          fi
+          if eval "$TEST_COMMAND" > "$RUNNER_TEMP/tests.txt" 2>&1; then passed=true; else passed=false; fi
           cat "$RUNNER_TEMP/tests.txt"
           echo "passed=$passed" >> "$GITHUB_OUTPUT"
 
@@ -53,8 +64,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          base=$(gh pr view "$PR" --json baseRefName -q .baseRefName)
           {
-            cat .github/prompts/review.md
+            cat .github/factory/review.md
             echo
             echo "## The ticket"
             for n in $(gh pr view "$PR" --json closingIssuesReferences -q '.closingIssuesReferences[].number'); do
@@ -62,7 +74,7 @@ jobs:
             done
             echo "## The diff"
             echo '````diff'
-            git diff origin/main...HEAD
+            git diff "origin/$base...HEAD"
             echo '````'
             echo "## Test output"
             echo '````'
@@ -72,10 +84,12 @@ jobs:
 
       - name: Agent reviews the change
         id: agent
-        uses: ./.github/actions/run-agent
+        uses: jonbaldie/software-factory/run-agent@v1
         with:
           name: review-pr-${{ env.PR }}
           prompt-file: ${{ runner.temp }}/prompt.md
+          harness: ${{ vars.FACTORY_HARNESS }}
+          model: ${{ vars.FACTORY_MODEL }}
           max-budget-usd: "0.75"
           permission-mode: default
           allowed-tools: Read,Glob,Grep # the reviewer can look but not touch
@@ -128,7 +142,7 @@ jobs:
             gh pr edit "$PR" --add-label ready-for-human
           else
             gh pr edit "$PR" --add-label agent:changes-requested
-            gh workflow run 3-fix.yml -f pr="$PR"
+            gh workflow run factory-fix.yml -f pr="$PR"
           fi
 
       - name: Report failure

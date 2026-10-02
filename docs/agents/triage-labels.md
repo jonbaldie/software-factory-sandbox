@@ -16,6 +16,6 @@ Edit the right-hand column to match whatever vocabulary you actually use.
 
 ## In this repo, `ready-for-agent` starts the factory
 
-Adding `ready-for-agent` to an issue starts `.github/workflows/1-implement.yml` right away. An agent then implements the ticket and opens a pull request, which is reviewed and merged automatically, and each run costs money. Only apply it when the ticket is fully specified.
+Adding `ready-for-agent` to an issue starts `.github/workflows/factory-implement.yml` right away. An agent then implements the ticket and opens a pull request, which is reviewed and merged automatically, and each run costs money. Only apply it when the ticket is fully specified.
 
 The factory also adds `ready-for-human` to a pull request after the reviewer agent rejects it three times. The `agent:*` labels show pipeline state and aren't triage roles. See `FACTORY.md`.

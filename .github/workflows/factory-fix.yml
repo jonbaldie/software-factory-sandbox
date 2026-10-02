@@ -1,4 +1,5 @@
-name: "3 · Fix"
+# From https://github.com/jonbaldie/software-factory. Rerun its installer to upgrade.
+name: "Factory 3 · Fix"
 
 # An agent addresses review feedback on a factory PR, then hands back to the reviewer.
 
@@ -29,6 +30,8 @@ jobs:
       PR: ${{ github.event.pull_request.number || inputs.pr }}
       GH_REPO: ${{ github.repository }}
       RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+      SETUP_COMMAND: ${{ vars.FACTORY_SETUP_COMMAND }}
+      TEST_COMMAND: ${{ vars.FACTORY_TEST_COMMAND }}
     steps:
       - name: Find the PR branch
         id: pr
@@ -41,7 +44,7 @@ jobs:
           ref: ${{ steps.pr.outputs.branch }}
           persist-credentials: false
 
-      - uses: actions/setup-node@v7
+      - uses: actions/setup-node@v7 # the agent runs on Node
         with:
           node-version: 22
 
@@ -49,9 +52,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          if [ -z "$TEST_COMMAND" ]; then
+            echo "::error::Set the FACTORY_TEST_COMMAND repository variable to the command that runs your tests."
+            exit 1
+          fi
           {
-            cat .github/prompts/fix.md
-            echo
+            cat .github/factory/fix.md
+            printf '\n## Test command\n\n```sh\n%s\n```\n\n' "$TEST_COMMAND"
             echo "## The ticket"
             for n in $(gh pr view "$PR" --json closingIssuesReferences -q '.closingIssuesReferences[].number'); do
               gh issue view "$n" --json number,title,body -q '"### #\(.number): \(.title)\n\n\(.body)\n"'
@@ -65,11 +72,17 @@ jobs:
               -q '.comments[] | select(.author.login != "github-actions") | "- @\(.author.login): \(.body)"'
           } > "$RUNNER_TEMP/prompt.md"
 
+      - name: Set up the project
+        if: env.SETUP_COMMAND != ''
+        run: eval "$SETUP_COMMAND"
+
       - name: Agent addresses the feedback
-        uses: ./.github/actions/run-agent
+        uses: jonbaldie/software-factory/run-agent@v1
         with:
           name: fix-pr-${{ env.PR }}
           prompt-file: ${{ runner.temp }}/prompt.md
+          harness: ${{ vars.FACTORY_HARNESS }}
+          model: ${{ vars.FACTORY_MODEL }}
           max-budget-usd: "1.00"
           openrouter-api-key: ${{ secrets.OPENROUTER_API_KEY }}
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
@@ -80,6 +93,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           BRANCH: ${{ steps.pr.outputs.branch }}
         run: |
+          if [ -n "$(git status --porcelain -- .github)" ]; then
+            echo "::error::The agent changed files under .github/, which the factory owns"
+            exit 1
+          fi
           git add -A
           if git diff --cached --quiet; then
             echo "::error::The agent finished without changing any files"
@@ -89,7 +106,7 @@ jobs:
             commit -q -m "Address review feedback"
           git push "https://x-access-token:${GH_TOKEN}@github.com/${GH_REPO}.git" "HEAD:$BRANCH"
           gh pr edit "$PR" --remove-label agent:changes-requested --add-label agent:review
-          gh workflow run 2-review.yml -f pr="$PR"
+          gh workflow run factory-review.yml -f pr="$PR"
 
       - name: Report failure
         if: failure()
