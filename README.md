@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { slugify, titleCase, wordCount } from './src/textkit.js';
+import { slugify, titleCase, truncate, wordCount } from './src/textkit.js';
 ```
 
 ## API
@@ -22,6 +22,14 @@ Capitalises the first letter of every word and each hyphenated part, while treat
 
 ```js
 titleCase('hello world'); // "Hello World"
+```
+
+### `truncate(input, maxLength)`
+
+Shortens a string to at most `maxLength` Unicode code points, including the ellipsis. It keeps the longest prefix of whole whitespace-separated words that fits; if the first word is too long, it cuts that word to fit. `maxLength` must be a positive integer.
+
+```js
+truncate('The quick brown fox', 12); // "The quick…"
 ```
 
 ### `wordCount(input)`

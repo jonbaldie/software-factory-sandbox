@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { slugify, titleCase, wordCount } from '../src/textkit.js';
+import { slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
 
 test('slugify lowercases and hyphenates', () => {
   assert.equal(slugify('Hello, World!'), 'hello-world');
@@ -30,6 +30,33 @@ test('titleCase keeps apostrophes within words and capitalises hyphenated parts'
 
 test('titleCase handles an empty string', () => {
   assert.equal(titleCase(''), '');
+});
+
+test('truncate leaves fitting and empty strings unchanged', () => {
+  assert.equal(truncate('short', 10), 'short');
+  assert.equal(truncate('', 1), '');
+});
+
+test('truncate keeps the longest whole-word prefix and removes trailing whitespace', () => {
+  assert.equal(truncate('The quick brown fox', 12), 'The quick…');
+  assert.equal(truncate('Hello world again', 13), 'Hello world…');
+  assert.equal(truncate('one two three', 9), 'one two…');
+});
+
+test('truncate shortens a word when the first word does not fit', () => {
+  assert.equal(truncate('Supercalifragilistic', 6), 'Super…');
+  assert.equal(truncate('abc', 1), '…');
+});
+
+test('truncate counts Unicode code points without splitting emoji', () => {
+  assert.equal(truncate('👋👋👋 wave', 4), '👋👋👋…');
+  assert.equal(truncate('👋👋', 1), '…');
+});
+
+test('truncate rejects invalid maximum lengths', () => {
+  assert.throws(() => truncate('abc', 0), RangeError);
+  assert.throws(() => truncate('abc', 2.5), RangeError);
+  assert.throws(() => truncate('abc', -1), RangeError);
 });
 
 test('wordCount counts words and treats hyphenated words as one', () => {
