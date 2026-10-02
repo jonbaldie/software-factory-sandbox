@@ -51,7 +51,13 @@ export function truncate(input, maxLength) {
     throw new RangeError('maxLength must be a positive integer');
   }
 
-  const characters = [...input];
+  if (input.length <= maxLength) return input;
+
+  const characters = [];
+  for (const character of input) {
+    characters.push(character);
+    if (characters.length > maxLength) break;
+  }
   if (characters.length <= maxLength) return input;
 
   const prefix = characters.slice(0, maxLength - 1);
