@@ -1,6 +1,18 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { camelCase, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { camelCase, kebabCase, slugify, titleCase, truncate, wordCount } from '../src/textkit.js';
+
+test('kebabCase converts spaces and lower-to-upper boundaries to lowercase hyphenated words', () => {
+  assert.deepEqual([kebabCase('Hello World'), kebabCase('fooBarBaz')], ['hello-world', 'foo-bar-baz']);
+});
+
+test('kebabCase treats repeated separators as one and drops empty words', () => {
+  assert.equal(kebabCase('  --foo__BAR--  '), 'foo-bar');
+});
+
+test('kebabCase returns empty for empty and whitespace-only input', () => {
+  assert.deepEqual([kebabCase(''), kebabCase(' \t\n ')], ['', '']);
+});
 
 test('camelCase joins words with a lowercase first word and camel-cased remainder', () => {
   assert.equal(camelCase('hello world'), 'helloWorld');

@@ -15,6 +15,23 @@ export function camelCase(input) {
     .join('');
 }
 
+function splitWords(input) {
+  return input
+    .replace(/([\p{Ll}])([\p{Lu}])/gu, '$1 $2')
+    .split(/[\s_-]+/u)
+    .filter(Boolean);
+}
+
+/**
+ * Convert a string to kebab-case, splitting on separators and lower-to-upper boundaries.
+ * @example kebabCase('Hello World') // "hello-world"
+ * @param {string} input
+ * @returns {string}
+ */
+export function kebabCase(input) {
+  return splitWords(input).map((word) => word.toLowerCase()).join('-');
+}
+
 /**
  * Turn a string into a URL-safe slug.
  * @example slugify("Hello, World!") // "hello-world"
