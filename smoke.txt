@@ -1,0 +1,1 @@
+Base branch, main: written by software-factory tests/smoke.py run 20261003-193641 to conflict with the other branch.
