@@ -175,6 +175,23 @@ export function countOccurrences(input, search) {
 }
 
 /**
+ * Repeat a string the requested number of times, joining copies with a separator.
+ * @example repeatWithSeparator('ab', 3, '-') // "ab-ab-ab"
+ * @param {string} s
+ * @param {number} count
+ * @param {string} separator
+ * @returns {string}
+ * @throws {RangeError} If count is not a non-negative integer.
+ */
+export function repeatWithSeparator(s, count, separator) {
+  if (!Number.isInteger(count) || count < 0) {
+    throw new RangeError('count must be a non-negative integer');
+  }
+
+  return Array(count).fill(s).join(separator);
+}
+
+/**
  * Ensure a string starts with the given prefix.
  * @example ensurePrefix('example.com', 'https://') // "https://example.com"
  * @param {string} input

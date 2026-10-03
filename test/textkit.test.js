@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
 
 test('ensurePrefix leaves input unchanged when it already has the prefix', () => {
   assert.equal(ensurePrefix('https://example.com', 'https://'), 'https://example.com');
@@ -461,6 +461,40 @@ test('wordCount returns zero when no words are present', () => {
 
 test('wordCount handles apostrophes, Unicode, numbers, and mixed whitespace', () => {
   assert.equal(wordCount("L’amour and don't eat crème-brûlée; 42."), 6);
+});
+
+test('repeatWithSeparator repeats a string and joins copies with the separator', () => {
+  assert.equal(repeatWithSeparator('ab', 3, '-'), 'ab-ab-ab');
+});
+
+test('repeatWithSeparator returns empty for a zero count', () => {
+  assert.equal(repeatWithSeparator('ab', 0, '-'), '');
+});
+
+test('repeatWithSeparator returns the string unchanged for a count of one', () => {
+  assert.equal(repeatWithSeparator('ab', 1, '-'), 'ab');
+});
+
+test('repeatWithSeparator places separators between empty copies', () => {
+  assert.equal(repeatWithSeparator('', 3, '-'), '--');
+});
+
+test('repeatWithSeparator allows an empty separator', () => {
+  assert.equal(repeatWithSeparator('ab', 3, ''), 'ababab');
+});
+
+test('repeatWithSeparator uses a multi-character separator literally', () => {
+  assert.equal(repeatWithSeparator('ab', 2, '<->'), 'ab<->ab');
+});
+
+test('repeatWithSeparator preserves Unicode strings and separators', () => {
+  assert.equal(repeatWithSeparator('🌟é', 2, '—'), '🌟é—🌟é');
+});
+
+test('repeatWithSeparator rejects counts that are not non-negative integers', () => {
+  assert.throws(() => repeatWithSeparator('ab', -1, '-'), RangeError);
+  assert.throws(() => repeatWithSeparator('ab', 1.5, '-'), RangeError);
+  assert.throws(() => repeatWithSeparator('ab', '2', '-'), RangeError);
 });
 
 test('countOccurrences counts matches from left to right', () => {
