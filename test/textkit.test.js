@@ -1,6 +1,26 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+
+test('ensureSuffix appends a missing suffix', () => {
+  assert.equal(ensureSuffix('report', '.txt'), 'report.txt');
+});
+
+test('ensureSuffix does not duplicate an existing suffix', () => {
+  assert.equal(ensureSuffix('report.txt', '.txt'), 'report.txt');
+});
+
+test('ensureSuffix appends a suffix to empty input', () => {
+  assert.equal(ensureSuffix('', '/'), '/');
+});
+
+test('ensureSuffix leaves input unchanged for an empty suffix', () => {
+  assert.equal(ensureSuffix('abc', ''), 'abc');
+});
+
+test('ensureSuffix matches suffixes case-sensitively', () => {
+  assert.equal(ensureSuffix('report.TXT', '.txt'), 'report.TXT.txt');
+});
 
 test('kebabCase lowercases words and joins them with hyphens', () => {
   assert.equal(kebabCase('Hello World'), 'hello-world');
