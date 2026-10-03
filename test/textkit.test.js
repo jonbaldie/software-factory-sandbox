@@ -1,6 +1,26 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+
+test('swapCase flips uppercase and lowercase letters in mixed-case input', () => {
+  assert.equal(swapCase('Hello World'), 'hELLO wORLD');
+});
+
+test('swapCase returns empty for empty input', () => {
+  assert.equal(swapCase(''), '');
+});
+
+test('swapCase leaves digits, punctuation, emoji, and combining marks unchanged', () => {
+  assert.equal(swapCase('abc123! 👋\u0301'), 'ABC123! 👋\u0301');
+});
+
+test('swapCase supports expanding uppercase mappings', () => {
+  assert.equal(swapCase('ß'), 'SS');
+});
+
+test('swapCase processes supplementary letters as single code points', () => {
+  assert.equal(swapCase('\u{10428}'), '\u{10400}');
+});
 
 test('kebabCase lowercases words and joins them with hyphens', () => {
   assert.equal(kebabCase('Hello World'), 'hello-world');

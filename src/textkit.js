@@ -107,6 +107,21 @@ export function snakeCase(input) {
 }
 
 /**
+ * Flip the case of each Unicode code point, leaving uncased characters unchanged.
+ * @example swapCase('Hello World') // "hELLO wORLD"
+ * @param {string} input
+ * @returns {string}
+ */
+export function swapCase(input) {
+  return [...input]
+    .map((character) => {
+      const lowercase = character.toLowerCase();
+      return lowercase === character ? character.toUpperCase() : lowercase;
+    })
+    .join('');
+}
+
+/**
  * Capitalise the first letter of every word and each hyphenated part.
  * Apostrophes are treated as part of a word.
  * @example titleCase("hello world") // "Hello World"
