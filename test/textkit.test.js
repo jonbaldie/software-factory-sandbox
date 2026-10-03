@@ -580,5 +580,5 @@ test('uncapitalize leaves a leading digit unchanged', () => {
 });
 
 test('uncapitalize lowercases only the first code point', () => {
-  assert.equal(uncapitalize('HELLO'), 'hello');
+  assert.equal(uncapitalize('HELLO'), 'hELLO');
 });
