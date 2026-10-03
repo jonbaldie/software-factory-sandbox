@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
 
 test('kebabCase lowercases words and joins them with hyphens', () => {
   assert.equal(kebabCase('Hello World'), 'hello-world');
@@ -321,4 +321,37 @@ test('countOccurrences returns zero when the search is absent', () => {
 
 test('countOccurrences returns zero for an empty search', () => {
   assert.equal(countOccurrences('abc', ''), 0);
+});
+
+test('wordWrap greedily wraps words and allows exact-width lines', () => {
+  assert.equal(wordWrap('The quick brown fox jumps over the lazy dog', 10), 'The quick\nbrown fox\njumps over\nthe lazy\ndog');
+});
+
+test('wordWrap normalizes whitespace runs, including unusual whitespace', () => {
+  assert.equal(wordWrap('  one\t\t two\nthree\u00a0four  ', 18), 'one two three four');
+});
+
+test('wordWrap returns empty for empty or whitespace-only input', () => {
+  assert.deepEqual([wordWrap('', 4), wordWrap(' \t\n\u00a0 ', 4)], ['', '']);
+});
+
+test('wordWrap splits overlong words into width-sized chunks', () => {
+  assert.equal(wordWrap('abcdefghij', 4), 'abcd\nefgh\nij');
+});
+
+test('wordWrap counts Unicode code points and spaces toward the width', () => {
+  assert.equal(wordWrap('👋 x y', 3), '👋 x\ny');
+});
+
+test('wordWrap splits overlong Unicode words at code point boundaries', () => {
+  assert.equal(wordWrap('👋👋👋', 2), '👋👋\n👋');
+});
+
+test('wordWrap rejects non-integer widths', () => {
+  assert.throws(() => wordWrap('abc', 1.5), RangeError);
+});
+
+test('wordWrap rejects zero or negative widths', () => {
+  assert.throws(() => wordWrap('abc', 0), RangeError);
+  assert.throws(() => wordWrap('abc', -1), RangeError);
 });
