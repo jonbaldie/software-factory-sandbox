@@ -238,4 +238,13 @@ export function padRightTo(input, width, fill = ' ') {
   return `${input}${fill.repeat(width - inputLength)}`;
 }
 
-// TODO(factory): Add capitalize(input), which upper-cases the first character and leaves the rest unchanged
+/**
+ * Uppercase the first Unicode code point and leave the rest unchanged.
+ * @example capitalize('hello world') // "Hello world"
+ * @param {string} input
+ * @returns {string}
+ */
+export function capitalize(input) {
+  const [first, ...rest] = input;
+  return first === undefined ? '' : `${first.toUpperCase()}${rest.join('')}`;
+}

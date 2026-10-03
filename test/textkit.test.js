@@ -1,6 +1,38 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from '../src/textkit.js';
+
+test('capitalize uppercases the first character', () => {
+  assert.equal(capitalize('hello world'), 'Hello world');
+});
+
+test('capitalize leaves the suffix unchanged', () => {
+  assert.equal(capitalize('hELLo'), 'HELLo');
+});
+
+test('capitalize does not skip leading whitespace', () => {
+  assert.equal(capitalize(' hello'), ' hello');
+});
+
+test('capitalize does not skip leading punctuation', () => {
+  assert.equal(capitalize('!hello'), '!hello');
+});
+
+test('capitalize returns empty for empty input', () => {
+  assert.equal(capitalize(''), '');
+});
+
+test('capitalize preserves Unicode uppercase mappings that expand', () => {
+  assert.equal(capitalize('ßeta'), 'SSeta');
+});
+
+test('capitalize handles a supplementary Unicode first code point', () => {
+  assert.equal(capitalize('\u{10428}eta'), '\u{10400}eta');
+});
+
+test('capitalize leaves a non-letter first code point unchanged', () => {
+  assert.equal(capitalize('👋hello'), '👋hello');
+});
 
 test('snakeCase lowercases words and joins them with underscores', () => {
   assert.equal(snakeCase('Hello World'), 'hello_world');

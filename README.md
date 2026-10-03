@@ -3,10 +3,19 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { camelCase, collapseWhitespace, countOccurrences, isBlank, isPalindrome, initials, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, isBlank, isPalindrome, initials, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from './src/textkit.js';
 ```
 
 ## API
+
+### `capitalize(input)`
+
+Uppercases the first Unicode code point and leaves the remainder unchanged. It does not trim or lowercase the input; an empty string returns an empty string. Uppercase mappings may expand.
+
+```js
+capitalize('hello world'); // "Hello world"
+capitalize('ßeta');        // "SSeta"
+```
 
 ### `camelCase(input)`
 
