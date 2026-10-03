@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, stripPrefix, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
 ```
 
 ## API
@@ -32,6 +32,15 @@ Joins words into PascalCase, splitting at whitespace, hyphens, and underscores. 
 ```js
 pascalCase('hello world');         // "HelloWorld"
 pascalCase('Hello-World_foo bar'); // "HelloWorldFooBar"
+```
+
+### `repeatWithSeparator(s, count, separator)`
+
+Returns `count` copies of `s`, joined by `separator`, with no leading or trailing separator. The separator is used literally, including when it is empty or multiple characters. `count` must be a non-negative integer or a `RangeError` is thrown.
+
+```js
+repeatWithSeparator('ab', 3, '-'); // "ab-ab-ab"
+repeatWithSeparator('ab', 0, '-'); // ""
 ```
 
 ### `countOccurrences(input, search)`
