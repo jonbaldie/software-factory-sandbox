@@ -175,6 +175,17 @@ export function countOccurrences(input, search) {
 }
 
 /**
+ * Ensure a string starts with the given prefix.
+ * @example ensurePrefix('example.com', 'https://') // "https://example.com"
+ * @param {string} input
+ * @param {string} prefix
+ * @returns {string}
+ */
+export function ensurePrefix(input, prefix) {
+  return input.startsWith(prefix) ? input : prefix + input;
+}
+
+/**
  * Ensure a string ends with the given suffix.
  * @example ensureSuffix('report', '.txt') // "report.txt"
  * @param {string} input

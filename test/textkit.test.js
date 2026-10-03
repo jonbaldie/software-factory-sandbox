@@ -1,6 +1,30 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+
+test('ensurePrefix leaves input unchanged when it already has the prefix', () => {
+  assert.equal(ensurePrefix('https://example.com', 'https://'), 'https://example.com');
+});
+
+test('ensurePrefix adds a missing prefix', () => {
+  assert.equal(ensurePrefix('example.com', 'https://'), 'https://example.com');
+});
+
+test('ensurePrefix returns the prefix for empty input', () => {
+  assert.equal(ensurePrefix('', '/'), '/');
+});
+
+test('ensurePrefix leaves input unchanged for an empty prefix', () => {
+  assert.equal(ensurePrefix('abc', ''), 'abc');
+});
+
+test('ensurePrefix matches prefixes case-sensitively', () => {
+  assert.equal(ensurePrefix('HTTPS://example.com', 'https://'), 'https://HTTPS://example.com');
+});
+
+test('ensurePrefix preserves matching Unicode input', () => {
+  assert.equal(ensurePrefix('🌐東京', '🌐'), '🌐東京');
+});
 
 test('swapCase flips uppercase and lowercase letters in mixed-case input', () => {
   assert.equal(swapCase('Hello World'), 'hELLO wORLD');

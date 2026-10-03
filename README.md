@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
 ```
 
 ## API
@@ -40,6 +40,15 @@ Counts occurrences of `search` in `input` from left to right without counting ov
 
 ```js
 countOccurrences('banana', 'an'); // 2
+```
+
+### `ensurePrefix(input, prefix)`
+
+Returns `input` unchanged if it already starts with `prefix`; otherwise prepends `prefix`. Matching is case-sensitive, and an empty prefix leaves `input` unchanged.
+
+```js
+ensurePrefix('example.com', 'https://');         // "https://example.com"
+ensurePrefix('https://example.com', 'https://'); // "https://example.com"
 ```
 
 ### `ensureSuffix(input, suffix)`
