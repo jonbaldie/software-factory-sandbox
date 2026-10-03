@@ -60,11 +60,12 @@ initials('Ada Lovelace', '.'); // "A.L."
 
 ### `padCenter(input, width, fill = ' ')`
 
-Centres `input` in a field of `width` Unicode code points. If the padding cannot be split evenly, the extra fill character goes on the right. The default fill is a space; a `fill` other than exactly one Unicode code point causes a `RangeError`. Input that is already at least `width` code points long is returned unchanged.
+Centres `input` in a field of `width` grapheme clusters, measured with `Intl.Segmenter` at grapheme granularity. If the padding cannot be split evenly, the extra fill character goes on the right. The default fill is a space; a `fill` other than exactly one Unicode code point causes a `RangeError`. Input that is already at least `width` grapheme clusters long is returned unchanged.
 
 ```js
-padCenter('ab', 6, '*'); // "**ab**"
-padCenter('ab', 5);      // " ab  "
+padCenter('ab', 6, '*');  // "**ab**"
+padCenter('ab', 5);       // " ab  "
+padCenter('e\u0301', 5); // "  e\u0301  " (decomposed accented e)
 ```
 
 ### `padLeftTo(input, width, fill = ' ')`

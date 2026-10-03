@@ -91,6 +91,13 @@ test('padCenter handles empty and Unicode strings and leaves fitting strings unc
   assert.equal(padCenter('longer', 3, '*'), 'longer');
 });
 
+test('padCenter measures width in grapheme clusters', () => {
+  const decomposedAccent = 'e\u0301';
+  assert.equal(padCenter(decomposedAccent, 5), `  ${decomposedAccent}  `);
+  assert.equal(padCenter(decomposedAccent, 2), `${decomposedAccent} `);
+  assert.equal(padCenter(decomposedAccent, 1), decomposedAccent);
+});
+
 test('padCenter rejects fills that are not exactly one character', () => {
   assert.throws(() => padCenter('ab', 5, ''), RangeError);
   assert.throws(() => padCenter('ab', 5, '**'), RangeError);
