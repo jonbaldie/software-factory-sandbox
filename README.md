@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
 ```
 
 ## API
@@ -31,6 +31,15 @@ Counts occurrences of `search` in `input` from left to right without counting ov
 
 ```js
 countOccurrences('banana', 'an'); // 2
+```
+
+### `ensureSuffix(input, suffix)`
+
+Returns `input` unchanged if it already ends with `suffix`; otherwise appends `suffix`. Matching is case-sensitive, and an empty suffix leaves `input` unchanged.
+
+```js
+ensureSuffix('report', '.txt');     // "report.txt"
+ensureSuffix('report.txt', '.txt'); // "report.txt"
 ```
 
 ### `collapseWhitespace(input)`
