@@ -1,0 +1,19 @@
+name: CI
+
+# PRs opened by the factory use GITHUB_TOKEN, which starts no pull_request runs, so the factory dispatches this one.
+on:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    env:
+      CI_FAIL: ${{ vars.CI_FAIL }} # experiment knob: set it to make CI fail after the factory's own tests pass
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm test
+      - run: test -z "$CI_FAIL"
