@@ -565,3 +565,7 @@ test('wordWrap rejects zero or negative widths', () => {
   assert.throws(() => wordWrap('abc', 0), RangeError);
   assert.throws(() => wordWrap('abc', -1), RangeError);
 });
+
+test('uncapitalize leaves a leading digit unchanged', () => {
+  assert.equal(uncapitalize('1st Place'), '1st Place');
+});
