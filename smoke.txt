@@ -1,1 +1,0 @@
-PR #78, s4a: written by software-factory tests/smoke.py run 20261003-194557 to conflict with the other branch.
