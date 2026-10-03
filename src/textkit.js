@@ -86,6 +86,17 @@ export function slugify(input) {
 }
 
 /**
+ * Convert runs of letters and numbers into lowercase words joined by hyphens.
+ * @example kebabCase('Hello World') // "hello-world"
+ * @param {string} input
+ * @returns {string}
+ */
+export function kebabCase(input) {
+  const separated = input.replace(/([\p{Ll}\p{N}])(\p{Lu})/gu, '$1 $2');
+  return separated.match(/[\p{L}\p{N}]+/gu)?.map((word) => word.toLowerCase()).join('-') ?? '';
+}
+
+/**
  * Convert runs of letters and numbers into lowercase words joined by underscores.
  * @example snakeCase('Hello World') // "hello_world"
  * @param {string} input
