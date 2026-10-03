@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
 
 test('kebabCase lowercases words and joins them with hyphens', () => {
   assert.equal(kebabCase('Hello World'), 'hello-world');
@@ -204,6 +204,34 @@ test('reverseWords returns empty for empty or whitespace-only input', () => {
 
 test('camelCase joins words with a lowercase first word and camel-cased remainder', () => {
   assert.equal(camelCase('hello world'), 'helloWorld');
+});
+
+test('pascalCase capitalises the first word and joins words without separators', () => {
+  assert.equal(pascalCase('hello world'), 'HelloWorld');
+});
+
+test('pascalCase splits words at spaces, hyphens, and underscores', () => {
+  assert.equal(pascalCase('Hello-World_foo bar'), 'HelloWorldFooBar');
+});
+
+test('pascalCase lowercases uppercase input before capitalising each word', () => {
+  assert.equal(pascalCase('HELLO WORLD'), 'HelloWorld');
+});
+
+test('pascalCase ignores leading, trailing, and repeated separators', () => {
+  assert.equal(pascalCase('  --foo__  '), 'Foo');
+});
+
+test('pascalCase returns empty for empty or separator-only input', () => {
+  assert.deepEqual([pascalCase(''), pascalCase(' - _ ')], ['', '']);
+});
+
+test('pascalCase keeps numeric words in sequence', () => {
+  assert.equal(pascalCase('version 2 beta'), 'Version2Beta');
+});
+
+test('pascalCase capitalises accented Unicode words', () => {
+  assert.equal(pascalCase('élan vital'), 'ÉlanVital');
 });
 
 test('camelCase splits words at spaces, hyphens, and underscores', () => {
