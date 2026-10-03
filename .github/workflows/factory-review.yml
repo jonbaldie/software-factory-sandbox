@@ -147,11 +147,16 @@ jobs:
         run: |
           # GitHub holds the CI runs on a PR the factory opened until someone approves them, and only those runs count as the PR's checks.
           # The factory keeps .github/ as the base branch has it, so the held runs are the repo's own CI.
-          runs=$(gh run list --commit "$(git rev-parse HEAD)" --event pull_request --status action_required --json databaseId -q '.[].databaseId')
+          # A failed run on the commit means the fixer found nothing to change, so it runs again.
+          runs=$(gh api "repos/$GH_REPO/actions/runs?head_sha=$(git rev-parse HEAD)&event=pull_request" \
+            -q '.workflow_runs[] | select((.path | contains("/factory-") | not) and (.conclusion == "action_required" or .conclusion == "failure")) | "\(.id) \(.conclusion)"')
           passed=true
-          for run in $runs; do
-            gh api -X POST "repos/$GH_REPO/actions/runs/$run/approve"
-          done
+          while read -r run conclusion; do
+            if [ "$conclusion" = action_required ]; then gh api -X POST "repos/$GH_REPO/actions/runs/$run/approve"
+            elif [ -n "$run" ]; then gh run rerun "$run" --failed
+            fi
+          done <<<"$runs"
+          runs=$(cut -d' ' -f1 <<<"$runs")
           for run in $runs; do
             if ! gh run watch "$run" --exit-status --interval 10 > /dev/null; then
               passed=false
