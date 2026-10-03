@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
 ```
 
 ## API
@@ -142,6 +142,16 @@ Converts runs of Unicode letters and numbers to lowercase words joined by unders
 
 ```js
 snakeCase('  Already-split  words '); // "already_split_words"
+```
+
+### `swapCase(input)`
+
+Flips the case of each Unicode code point: if lowercasing changes it, the lowercase form is used; otherwise its uppercase form is used. Uncased characters remain unchanged. Case mappings may expand, so `ß` becomes `SS`.
+
+```js
+swapCase('Hello World'); // "hELLO wORLD"
+swapCase('abc123!');     // "ABC123!"
+swapCase('ß');           // "SS"
 ```
 
 ### `titleCase(input)`
