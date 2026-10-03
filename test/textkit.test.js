@@ -578,3 +578,7 @@ test('wordWrap rejects zero or negative widths', () => {
 test('uncapitalize leaves a leading digit unchanged', () => {
   assert.equal(uncapitalize('1st Place'), '1st Place');
 });
+
+test('uncapitalize lowercases only the first code point', () => {
+  assert.equal(uncapitalize('HELLO'), 'hello');
+});
