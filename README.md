@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
 ```
 
 ## API
@@ -23,6 +23,15 @@ Joins words into camelCase, splitting at whitespace, hyphens, and underscores. E
 
 ```js
 camelCase('Hello-World_foo bar'); // "helloWorldFooBar"
+```
+
+### `pascalCase(input)`
+
+Joins words into PascalCase, splitting at whitespace, hyphens, and underscores. Each word is lowercased and its first letter is capitalised. Repeated and surrounding separators are ignored; empty or separator-only input returns an empty string.
+
+```js
+pascalCase('hello world');         // "HelloWorld"
+pascalCase('Hello-World_foo bar'); // "HelloWorldFooBar"
 ```
 
 ### `countOccurrences(input, search)`

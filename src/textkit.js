@@ -71,6 +71,16 @@ export function camelCase(input) {
 }
 
 /**
+ * Convert a string to PascalCase, splitting words at whitespace, hyphens, and underscores.
+ * @example pascalCase('hello world') // "HelloWorld"
+ * @param {string} input
+ * @returns {string}
+ */
+export function pascalCase(input) {
+  return capitalize(camelCase(input));
+}
+
+/**
  * Turn a string into a URL-safe slug.
  * @example slugify("Hello, World!") // "hello-world"
  * @param {string} input
