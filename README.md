@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, stripPrefix, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
 ```
 
 ## API
@@ -67,6 +67,15 @@ Returns `input` unchanged if it already ends with `suffix`; otherwise appends `s
 ```js
 ensureSuffix('report', '.txt');     // "report.txt"
 ensureSuffix('report.txt', '.txt'); // "report.txt"
+```
+
+### `stripSuffix(s, suffix)`
+
+Returns `s` without one trailing `suffix` when `s` ends with it; otherwise returns `s` unchanged. Matching is literal and case-sensitive. An empty suffix or empty `s` leaves `s` unchanged.
+
+```js
+stripSuffix('report.txt', '.txt');     // "report"
+stripSuffix('report.txt.txt', '.txt'); // "report.txt"
 ```
 
 ### `collapseWhitespace(input)`
