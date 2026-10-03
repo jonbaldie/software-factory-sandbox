@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
 ```
 
 ## API
@@ -148,4 +148,13 @@ Counts words made from Unicode letters or numbers. Internal hyphens and straight
 
 ```js
 wordCount('well-known phrase'); // 2
+```
+
+### `wordWrap(input, maxWidth)`
+
+Greedily wraps words in order, joining them with single spaces and separating lines with newlines. Runs of whitespace (including newlines) are normalized; empty or whitespace-only input returns an empty string. Width is measured in Unicode code points, including spaces, and words longer than `maxWidth` are split at code-point boundaries. No output line exceeds the width, and `maxWidth` must be a positive integer or a `RangeError` is thrown.
+
+```js
+wordWrap('The quick brown fox', 10); // "The quick\nbrown fox"
+wordWrap('abcdefghij', 4);           // "abcd\nefgh\nij"
 ```

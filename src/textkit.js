@@ -260,3 +260,54 @@ export function capitalize(input) {
   const [first, ...rest] = input;
   return first === undefined ? '' : `${first.toUpperCase()}${rest.join('')}`;
 }
+
+/**
+ * Wrap whitespace-separated words to fit within a maximum line width.
+ * @example wordWrap('The quick brown fox', 10) // "The quick\nbrown fox"
+ * @param {string} input
+ * @param {number} maxWidth
+ * @returns {string}
+ * @throws {RangeError} If maxWidth is not a positive integer.
+ */
+export function wordWrap(input, maxWidth) {
+  if (!Number.isInteger(maxWidth) || maxWidth < 1) {
+    throw new RangeError('maxWidth must be a positive integer');
+  }
+
+  const words = input.match(/\S+/gu) ?? [];
+  const lines = [];
+  let line = '';
+  let lineWidth = 0;
+
+  for (const word of words) {
+    const characters = [...word];
+    if (characters.length > maxWidth) {
+      if (line !== '') lines.push(line);
+      line = '';
+      lineWidth = 0;
+
+      for (let offset = 0; offset < characters.length; offset += maxWidth) {
+        const chunk = characters.slice(offset, offset + maxWidth).join('');
+        if (offset + maxWidth < characters.length) {
+          lines.push(chunk);
+        } else {
+          line = chunk;
+          lineWidth = characters.length - offset;
+        }
+      }
+    } else if (line === '') {
+      line = word;
+      lineWidth = characters.length;
+    } else if (lineWidth + characters.length + 1 <= maxWidth) {
+      line += ` ${word}`;
+      lineWidth += characters.length + 1;
+    } else {
+      lines.push(line);
+      line = word;
+      lineWidth = characters.length;
+    }
+  }
+
+  if (line !== '') lines.push(line);
+  return lines.join('\n');
+}
