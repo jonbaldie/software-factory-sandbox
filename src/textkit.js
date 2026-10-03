@@ -150,6 +150,17 @@ export function countOccurrences(input, search) {
 }
 
 /**
+ * Ensure a string ends with the given suffix.
+ * @example ensureSuffix('report', '.txt') // "report.txt"
+ * @param {string} input
+ * @param {string} suffix
+ * @returns {string}
+ */
+export function ensureSuffix(input, suffix) {
+  return input.endsWith(suffix) ? input : input + suffix;
+}
+
+/**
  * Shorten a string at a whitespace-delimited word boundary, appending an ellipsis.
  * Length is counted in Unicode code points, including the ellipsis.
  * @example truncate('The quick brown fox', 12) // "The quick…"
