@@ -139,15 +139,37 @@ jobs:
           anthropic-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
           claude-code-oauth-token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
+      - name: Wait for the repo's CI
+        id: ci
+        if: steps.assigned.outputs.owners == '' && steps.tests.outputs.passed == 'true' && fromJSON(steps.agent.outputs.structured-output).verdict == 'approve'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # GitHub holds the CI runs on a PR the factory opened until someone approves them, and only those runs count as the PR's checks.
+          # The factory keeps .github/ as the base branch has it, so the held runs are the repo's own CI.
+          runs=$(gh run list --commit "$(git rev-parse HEAD)" --event pull_request --status action_required --json databaseId -q '.[].databaseId')
+          passed=true
+          for run in $runs; do
+            gh api -X POST "repos/$GH_REPO/actions/runs/$run/approve"
+          done
+          for run in $runs; do
+            if ! gh run watch "$run" --exit-status --interval 10 > /dev/null; then
+              passed=false
+              { echo "$GITHUB_SERVER_URL/$GH_REPO/actions/runs/$run"; gh run view "$run" --log-failed | tail -n 40; } >> "$RUNNER_TEMP/ci.txt"
+            fi
+          done
+          echo "passed=$passed" >> "$GITHUB_OUTPUT"
+
       - name: Act on the verdict
         if: steps.assigned.outputs.owners == ''
         env:
           GH_TOKEN: ${{ github.token }}
           REVIEW: ${{ steps.agent.outputs.structured-output }}
           TESTS_PASSED: ${{ steps.tests.outputs.passed }}
+          CI_PASSED: ${{ steps.ci.outputs.passed }}
         run: |
           verdict=$(jq -r .verdict <<<"$REVIEW")
-          if [ "$TESTS_PASSED" != true ]; then verdict=request_changes; fi
+          if [ "$TESTS_PASSED" != true ] || [ "$CI_PASSED" = false ]; then verdict=request_changes; fi
           # Count only the factory's own reviews: anyone can post a comment with the marker.
           rounds=$(gh pr view "$PR" --json comments \
             -q '[.comments[] | select(.author.login == "github-actions" and (.body | contains("<!-- factory:review request_changes -->")))] | length')
@@ -167,6 +189,9 @@ jobs:
             if [ "$TESTS_PASSED" != true ]; then
               printf '\n**Tests are failing:**\n```\n%s\n```\n' "$(tail -n 40 "$RUNNER_TEMP/tests.txt")"
             fi
+            if [ "$CI_PASSED" = false ]; then
+              printf '\n**CI is failing:**\n```\n%s\n```\n' "$(cat "$RUNNER_TEMP/ci.txt")"
+            fi
             echo
             echo "_[Review run]($RUN_URL)_"
           } > "$RUNNER_TEMP/comment.md"
@@ -181,11 +206,12 @@ jobs:
               for n in $issues; do gh issue view "$n" --json assignees -q '.assignees[].login'; done; } | sort -u | sed 's/^/@/' | paste -sd' ' -)
             if [ -n "$owners" ]; then
               gh pr comment "$PR" --body "⏸️ This pull request or its issue is now assigned to $owners, so the factory left it open for them to merge."
-            # GITHUB_TOKEN's pushes start no pull_request runs, so start the repo's CI on the branch and let GitHub merge once the required checks pass.
-            # --match-head-commit keeps GitHub from merging a commit the reviewer didn't see.
             # Run outside the checkout so gh doesn't try to switch local branches.
-            elif reviewed=$(git rev-parse HEAD) && ! (cd "$RUNNER_TEMP" && gh workflow run ci.yml --ref "$(gh pr view "$PR" --json headRefName -q .headRefName)" &&
-              gh pr merge "$PR" --auto --squash --match-head-commit "$reviewed" --delete-branch); then
+            # GitHub takes a few seconds to count finished checks, so a blocked merge gets a few more tries.
+            elif reviewed=$(git rev-parse HEAD) && ! for try in 1 2 3 4 5 6; do
+                (cd "$RUNNER_TEMP" && gh pr merge "$PR" --squash --delete-branch --match-head-commit "$reviewed") && break
+                [ "$try" -lt 6 ] && sleep 10
+              done; then
               # GitHub works out mergeability in the background, so give it a moment.
               for _ in 1 2 3 4 5 6; do
                 mergeable=$(gh pr view "$PR" --json mergeable -q .mergeable)
