@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
 
 test('ensurePrefix leaves input unchanged when it already has the prefix', () => {
   assert.equal(ensurePrefix('https://example.com', 'https://'), 'https://example.com');
@@ -76,6 +76,38 @@ test('swapCase supports expanding uppercase mappings', () => {
 
 test('swapCase processes supplementary letters as single code points', () => {
   assert.equal(swapCase('\u{10428}'), '\u{10400}');
+});
+
+test('stripSuffix removes a matching trailing suffix', () => {
+  assert.equal(stripSuffix('report.txt', '.txt'), 'report');
+});
+
+test('stripSuffix leaves input unchanged when suffix is absent', () => {
+  assert.equal(stripSuffix('report.txt.bak', '.txt'), 'report.txt.bak');
+});
+
+test('stripSuffix leaves input unchanged for an empty suffix', () => {
+  assert.equal(stripSuffix('abc', ''), 'abc');
+});
+
+test('stripSuffix leaves an empty input unchanged', () => {
+  assert.equal(stripSuffix('', '.txt'), '');
+});
+
+test('stripSuffix leaves input unchanged when suffix is longer', () => {
+  assert.equal(stripSuffix('v', 'version'), 'v');
+});
+
+test('stripSuffix matches suffixes case-sensitively', () => {
+  assert.equal(stripSuffix('report.TXT', '.txt'), 'report.TXT');
+});
+
+test('stripSuffix removes a Unicode suffix', () => {
+  assert.equal(stripSuffix('report🌐', '🌐'), 'report');
+});
+
+test('stripSuffix removes only one repeated suffix', () => {
+  assert.equal(stripSuffix('report.txt.txt', '.txt'), 'report.txt');
 });
 
 test('ensureSuffix appends a missing suffix', () => {

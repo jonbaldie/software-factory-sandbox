@@ -225,6 +225,17 @@ export function ensureSuffix(input, suffix) {
 }
 
 /**
+ * Remove a suffix from the end of a string when present.
+ * @example stripSuffix('report.txt', '.txt') // "report"
+ * @param {string} s
+ * @param {string} suffix
+ * @returns {string}
+ */
+export function stripSuffix(s, suffix) {
+  return s.endsWith(suffix) ? s.slice(0, s.length - suffix.length) : s;
+}
+
+/**
  * Shorten a string at a whitespace-delimited word boundary, appending an ellipsis.
  * Length is counted in Unicode code points, including the ellipsis.
  * @example truncate('The quick brown fox', 12) // "The quick…"
