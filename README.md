@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, isBlank, isPalindrome, initials, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from './src/textkit.js';
 ```
 
 ## API
@@ -65,6 +65,15 @@ Returns the uppercase first character of each whitespace-separated word. Any run
 ```js
 initials('Ada Lovelace');      // "AL"
 initials('Ada Lovelace', '.'); // "A.L."
+```
+
+### `kebabCase(input)`
+
+Converts runs of Unicode letters and numbers to lowercase words joined by hyphens. Other characters separate words, and camel-case boundaries are split. Empty input returns an empty string.
+
+```js
+kebabCase('Hello World'); // "hello-world"
+kebabCase('fooBar baz'); // "foo-bar-baz"
 ```
 
 ### `padCenter(input, width, fill = ' ')`

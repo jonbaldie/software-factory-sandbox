@@ -1,6 +1,26 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from '../src/textkit.js';
+
+test('kebabCase lowercases words and joins them with hyphens', () => {
+  assert.equal(kebabCase('Hello World'), 'hello-world');
+});
+
+test('kebabCase splits camelCase boundaries', () => {
+  assert.equal(kebabCase('fooBar baz'), 'foo-bar-baz');
+});
+
+test('kebabCase returns empty for empty input', () => {
+  assert.equal(kebabCase(''), '');
+});
+
+test('kebabCase ignores punctuation and repeated separators', () => {
+  assert.equal(kebabCase('  Already--split,  words! '), 'already-split-words');
+});
+
+test('kebabCase keeps Unicode letters and numbers', () => {
+  assert.equal(kebabCase('Crème-東京 ٤٢!'), 'crème-東京-٤٢');
+});
 
 test('capitalize uppercases the first character', () => {
   assert.equal(capitalize('hello world'), 'Hello world');
@@ -36,6 +56,10 @@ test('capitalize leaves a non-letter first code point unchanged', () => {
 
 test('snakeCase lowercases words and joins them with underscores', () => {
   assert.equal(snakeCase('Hello World'), 'hello_world');
+});
+
+test('snakeCase does not split camelCase boundaries', () => {
+  assert.equal(snakeCase('fooBar baz'), 'foobar_baz');
 });
 
 test('snakeCase treats punctuation and repeated whitespace as word separators', () => {
