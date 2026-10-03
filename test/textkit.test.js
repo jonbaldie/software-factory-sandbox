@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, uncapitalize, wordCount, wordWrap } from '../src/textkit.js';
 
 test('ensurePrefix leaves input unchanged when it already has the prefix', () => {
   assert.equal(ensurePrefix('https://example.com', 'https://'), 'https://example.com');
@@ -180,6 +180,35 @@ test('capitalize handles a supplementary Unicode first code point', () => {
 
 test('capitalize leaves a non-letter first code point unchanged', () => {
   assert.equal(capitalize('👋hello'), '👋hello');
+});
+
+test('uncapitalize lowercases the first character', () => {
+  assert.equal(uncapitalize('Hello World'), 'hello World');
+});
+
+test('uncapitalize leaves the suffix unchanged', () => {
+  assert.equal(uncapitalize('HELLO'), 'hELLO');
+});
+
+test('uncapitalize does not skip leading whitespace or punctuation', () => {
+  assert.equal(uncapitalize(' Hello'), ' Hello');
+  assert.equal(uncapitalize('!Hello'), '!Hello');
+});
+
+test('uncapitalize returns empty for empty input', () => {
+  assert.equal(uncapitalize(''), '');
+});
+
+test('uncapitalize supports expanding lowercase mappings', () => {
+  assert.equal(uncapitalize('İstanbul'), 'i\u0307stanbul');
+});
+
+test('uncapitalize handles a supplementary Unicode first code point', () => {
+  assert.equal(uncapitalize('\u{10400}eta'), '\u{10428}eta');
+});
+
+test('uncapitalize leaves a non-letter first code point unchanged', () => {
+  assert.equal(uncapitalize('👋Hello'), '👋Hello');
 });
 
 test('snakeCase lowercases words and joins them with underscores', () => {

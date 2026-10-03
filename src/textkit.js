@@ -348,6 +348,17 @@ export function capitalize(input) {
 }
 
 /**
+ * Lowercase the first Unicode code point and leave the rest unchanged.
+ * @example uncapitalize('Hello World') // "hello World"
+ * @param {string} input
+ * @returns {string}
+ */
+export function uncapitalize(input) {
+  const [first, ...rest] = input;
+  return first === undefined ? '' : `${first.toLowerCase()}${rest.join('')}`;
+}
+
+/**
  * Wrap whitespace-separated words to fit within a maximum line width.
  * @example wordWrap('The quick brown fox', 10) // "The quick\nbrown fox"
  * @param {string} input
