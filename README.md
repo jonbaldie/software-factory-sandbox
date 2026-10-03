@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, stripPrefix, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
 ```
 
 ## API
@@ -49,6 +49,15 @@ Returns `input` unchanged if it already starts with `prefix`; otherwise prepends
 ```js
 ensurePrefix('example.com', 'https://');         // "https://example.com"
 ensurePrefix('https://example.com', 'https://'); // "https://example.com"
+```
+
+### `stripPrefix(s, prefix)`
+
+Returns `s` without one leading `prefix` when `s` starts with it; otherwise returns `s` unchanged. Matching is literal and case-sensitive. An empty prefix or empty string leaves `s` unchanged.
+
+```js
+stripPrefix('v1.2', 'v'); // "1.2"
+stripPrefix('vv1', 'v');  // "v1"
 ```
 
 ### `ensureSuffix(input, suffix)`

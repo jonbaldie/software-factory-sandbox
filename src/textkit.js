@@ -186,6 +186,17 @@ export function ensurePrefix(input, prefix) {
 }
 
 /**
+ * Remove a prefix from the start of a string when present.
+ * @example stripPrefix('v1.2', 'v') // "1.2"
+ * @param {string} s
+ * @param {string} prefix
+ * @returns {string}
+ */
+export function stripPrefix(s, prefix) {
+  return s.startsWith(prefix) ? s.slice(prefix.length) : s;
+}
+
+/**
  * Ensure a string ends with the given suffix.
  * @example ensureSuffix('report', '.txt') // "report.txt"
  * @param {string} input

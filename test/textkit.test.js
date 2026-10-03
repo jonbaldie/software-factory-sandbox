@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, reverseWords, slugify, snakeCase, stripPrefix, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
 
 test('ensurePrefix leaves input unchanged when it already has the prefix', () => {
   assert.equal(ensurePrefix('https://example.com', 'https://'), 'https://example.com');
@@ -20,6 +20,38 @@ test('ensurePrefix leaves input unchanged for an empty prefix', () => {
 
 test('ensurePrefix matches prefixes case-sensitively', () => {
   assert.equal(ensurePrefix('HTTPS://example.com', 'https://'), 'https://HTTPS://example.com');
+});
+
+test('stripPrefix removes a matching leading prefix', () => {
+  assert.equal(stripPrefix('v1.2', 'v'), '1.2');
+});
+
+test('stripPrefix leaves a substring after the start unchanged', () => {
+  assert.equal(stripPrefix('path/v1', 'v'), 'path/v1');
+});
+
+test('stripPrefix leaves an empty input unchanged', () => {
+  assert.equal(stripPrefix('', 'v'), '');
+});
+
+test('stripPrefix leaves input unchanged for an empty prefix', () => {
+  assert.equal(stripPrefix('abc', ''), 'abc');
+});
+
+test('stripPrefix leaves input unchanged when the prefix is longer', () => {
+  assert.equal(stripPrefix('v', 'version'), 'v');
+});
+
+test('stripPrefix matches prefixes case-sensitively', () => {
+  assert.equal(stripPrefix('HTTP://example.com', 'http://'), 'HTTP://example.com');
+});
+
+test('stripPrefix removes a Unicode prefix', () => {
+  assert.equal(stripPrefix('🌐東京', '🌐'), '東京');
+});
+
+test('stripPrefix removes only one matching prefix', () => {
+  assert.equal(stripPrefix('vv1', 'v'), 'v1');
 });
 
 test('ensurePrefix preserves matching Unicode input', () => {
