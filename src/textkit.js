@@ -237,3 +237,5 @@ export function padRightTo(input, width, fill = ' ') {
 
   return `${input}${fill.repeat(width - inputLength)}`;
 }
+
+// TODO(factory): Add capitalize(input), which upper-cases the first character and leaves the rest unchanged
