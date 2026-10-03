@@ -181,8 +181,11 @@ jobs:
               for n in $issues; do gh issue view "$n" --json assignees -q '.assignees[].login'; done; } | sort -u | sed 's/^/@/' | paste -sd' ' -)
             if [ -n "$owners" ]; then
               gh pr comment "$PR" --body "⏸️ This pull request or its issue is now assigned to $owners, so the factory left it open for them to merge."
+            # GITHUB_TOKEN's pushes start no pull_request runs, so start the repo's CI on the branch and let GitHub merge once the required checks pass.
+            # --match-head-commit keeps GitHub from merging a commit the reviewer didn't see.
             # Run outside the checkout so gh doesn't try to switch local branches.
-            elif ! (cd "$RUNNER_TEMP" && gh pr merge "$PR" --squash --delete-branch); then
+            elif reviewed=$(git rev-parse HEAD) && ! (cd "$RUNNER_TEMP" && gh workflow run ci.yml --ref "$(gh pr view "$PR" --json headRefName -q .headRefName)" &&
+              gh pr merge "$PR" --auto --squash --match-head-commit "$reviewed" --delete-branch); then
               # GitHub works out mergeability in the background, so give it a moment.
               for _ in 1 2 3 4 5 6; do
                 mergeable=$(gh pr view "$PR" --json mergeable -q .mergeable)
