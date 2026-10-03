@@ -187,8 +187,9 @@ export function truncate(input, maxLength) {
 }
 
 /**
- * Centre a string in a field of Unicode code points, putting extra padding on the right.
+ * Centre a string in a field of grapheme clusters, putting extra padding on the right.
  * @example padCenter('ab', 5) // " ab  "
+ * @example padCenter('e\u0301', 5) // "  e\u0301  "
  * @param {string} input
  * @param {number} width
  * @param {string} [fill=' ']
@@ -200,7 +201,7 @@ export function padCenter(input, width, fill = ' ') {
     throw new RangeError('fill must be exactly one character');
   }
 
-  const inputLength = [...input].length;
+  const inputLength = [...new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(input)].length;
   if (inputLength >= width) return input;
 
   const paddingLength = width - inputLength;
@@ -249,4 +250,13 @@ export function padRightTo(input, width, fill = ' ') {
   return `${input}${fill.repeat(width - inputLength)}`;
 }
 
-// TODO(factory): Add capitalize(input), which upper-cases the first character and leaves the rest unchanged
+/**
+ * Uppercase the first Unicode code point and leave the rest unchanged.
+ * @example capitalize('hello world') // "Hello world"
+ * @param {string} input
+ * @returns {string}
+ */
+export function capitalize(input) {
+  const [first, ...rest] = input;
+  return first === undefined ? '' : `${first.toUpperCase()}${rest.join('')}`;
+}

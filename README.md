@@ -3,10 +3,19 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { camelCase, collapseWhitespace, countOccurrences, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from './src/textkit.js';
 ```
 
 ## API
+
+### `capitalize(input)`
+
+Uppercases the first Unicode code point and leaves the remainder unchanged. It does not trim or lowercase the input; an empty string returns an empty string. Uppercase mappings may expand.
+
+```js
+capitalize('hello world'); // "Hello world"
+capitalize('ßeta');        // "SSeta"
+```
 
 ### `camelCase(input)`
 
@@ -69,11 +78,12 @@ kebabCase('fooBar baz'); // "foo-bar-baz"
 
 ### `padCenter(input, width, fill = ' ')`
 
-Centres `input` in a field of `width` Unicode code points. If the padding cannot be split evenly, the extra fill character goes on the right. The default fill is a space; a `fill` other than exactly one Unicode code point causes a `RangeError`. Input that is already at least `width` code points long is returned unchanged.
+Centres `input` in a field of `width` grapheme clusters, measured with `Intl.Segmenter` at grapheme granularity. If the padding cannot be split evenly, the extra fill character goes on the right. The default fill is a space; a `fill` other than exactly one Unicode code point causes a `RangeError`. Input that is already at least `width` grapheme clusters long is returned unchanged.
 
 ```js
-padCenter('ab', 6, '*'); // "**ab**"
-padCenter('ab', 5);      // " ab  "
+padCenter('ab', 6, '*');  // "**ab**"
+padCenter('ab', 5);       // " ab  "
+padCenter('e\u0301', 5); // "  e\u0301  " (decomposed accented e)
 ```
 
 ### `padLeftTo(input, width, fill = ' ')`

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, reverseWords, slugify, snakeCase, titleCase, truncate, wordCount } from '../src/textkit.js';
 
 test('kebabCase lowercases words and joins them with hyphens', () => {
   assert.equal(kebabCase('Hello World'), 'hello-world');
@@ -20,6 +20,38 @@ test('kebabCase ignores punctuation and repeated separators', () => {
 
 test('kebabCase keeps Unicode letters and numbers', () => {
   assert.equal(kebabCase('Crème-東京 ٤٢!'), 'crème-東京-٤٢');
+});
+
+test('capitalize uppercases the first character', () => {
+  assert.equal(capitalize('hello world'), 'Hello world');
+});
+
+test('capitalize leaves the suffix unchanged', () => {
+  assert.equal(capitalize('hELLo'), 'HELLo');
+});
+
+test('capitalize does not skip leading whitespace', () => {
+  assert.equal(capitalize(' hello'), ' hello');
+});
+
+test('capitalize does not skip leading punctuation', () => {
+  assert.equal(capitalize('!hello'), '!hello');
+});
+
+test('capitalize returns empty for empty input', () => {
+  assert.equal(capitalize(''), '');
+});
+
+test('capitalize preserves Unicode uppercase mappings that expand', () => {
+  assert.equal(capitalize('ßeta'), 'SSeta');
+});
+
+test('capitalize handles a supplementary Unicode first code point', () => {
+  assert.equal(capitalize('\u{10428}eta'), '\u{10400}eta');
+});
+
+test('capitalize leaves a non-letter first code point unchanged', () => {
+  assert.equal(capitalize('👋hello'), '👋hello');
 });
 
 test('snakeCase lowercases words and joins them with underscores', () => {
@@ -113,6 +145,13 @@ test('padCenter handles empty and Unicode strings and leaves fitting strings unc
   assert.equal(padCenter('x', 3, '👋'), '👋x👋');
   assert.equal(padCenter('abc', 3, '*'), 'abc');
   assert.equal(padCenter('longer', 3, '*'), 'longer');
+});
+
+test('padCenter measures width in grapheme clusters', () => {
+  const decomposedAccent = 'e\u0301';
+  assert.equal(padCenter(decomposedAccent, 5), `  ${decomposedAccent}  `);
+  assert.equal(padCenter(decomposedAccent, 2), `${decomposedAccent} `);
+  assert.equal(padCenter(decomposedAccent, 1), decomposedAccent);
 });
 
 test('padCenter rejects fills that are not exactly one character', () => {
