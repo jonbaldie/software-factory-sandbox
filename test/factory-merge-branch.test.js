@@ -4,5 +4,5 @@ import { readFileSync } from 'node:fs';
 
 test('factory merge smoke preserves the branch update', () => {
   const fixture = JSON.parse(readFileSync(new URL('../smoke-merge.json', import.meta.url), 'utf8'));
-  assert.equal(fixture.branch, "20261004-060726-m3");
+  assert.equal(fixture.branch, "20261004-064130-m4");
 });
