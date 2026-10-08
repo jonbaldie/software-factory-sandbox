@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countLines, countOccurrences, ensurePrefix, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
 ```
 
 ## API
@@ -41,6 +41,16 @@ Returns `count` copies of `s`, joined by `separator`, with no leading or trailin
 ```js
 repeatWithSeparator('ab', 3, '-'); // "ab-ab-ab"
 repeatWithSeparator('ab', 0, '-'); // ""
+```
+
+### `countLines(input)`
+
+Counts lines separated by LF, CRLF (as one line break), or a lone CR. Empty input returns `0`, and a trailing line break does not add an extra line. Consecutive line breaks count the blank lines between them.
+
+```js
+countLines('a\nb');       // 2
+countLines('a\r\n\r\nb'); // 3
+countLines('a\n');        // 1
 ```
 
 ### `countOccurrences(input, search)`

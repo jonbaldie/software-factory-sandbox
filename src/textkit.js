@@ -156,6 +156,18 @@ export function wordCount(input) {
 }
 
 /**
+ * Count lines separated by LF, CRLF, or CR; a trailing line break adds no extra line.
+ * @example countLines('a\nb') // 2
+ * @example countLines('a\r\n') // 1
+ * @param {string} input
+ * @returns {number}
+ */
+export function countLines(input) {
+  const lines = input.split(/\r\n|\r|\n/u);
+  return lines.at(-1) === '' ? lines.length - 1 : lines.length;
+}
+
+/**
  * Count non-overlapping occurrences of a search string from left to right.
  * @example countOccurrences('banana', 'an') // 2
  * @param {string} input

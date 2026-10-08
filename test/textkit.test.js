@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countLines, countOccurrences, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
 
 test('ensurePrefix leaves input unchanged when it already has the prefix', () => {
   assert.equal(ensurePrefix('https://example.com', 'https://'), 'https://example.com');
@@ -495,6 +495,34 @@ test('repeatWithSeparator rejects counts that are not non-negative integers', ()
   assert.throws(() => repeatWithSeparator('ab', -1, '-'), RangeError);
   assert.throws(() => repeatWithSeparator('ab', 1.5, '-'), RangeError);
   assert.throws(() => repeatWithSeparator('ab', '2', '-'), RangeError);
+});
+
+test('countLines returns zero for empty input', () => {
+  assert.equal(countLines(''), 0);
+});
+
+test('countLines returns one for a single line', () => {
+  assert.equal(countLines('a'), 1);
+});
+
+test('countLines counts lines separated by LF', () => {
+  assert.equal(countLines('a\nb'), 2);
+});
+
+test('countLines does not count an empty segment after a trailing LF', () => {
+  assert.equal(countLines('a\n'), 1);
+});
+
+test('countLines counts a lone CR as a line break', () => {
+  assert.equal(countLines('a\rb'), 2);
+});
+
+test('countLines counts CRLF as one line break', () => {
+  assert.equal(countLines('a\r\nb'), 2);
+});
+
+test('countLines counts a blank line between consecutive CRLFs', () => {
+  assert.equal(countLines('a\r\n\r\nb'), 3);
 });
 
 test('countOccurrences counts matches from left to right', () => {
