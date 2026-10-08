@@ -573,3 +573,7 @@ test('wordWrap rejects zero or negative widths', () => {
   assert.throws(() => wordWrap('abc', 0), RangeError);
   assert.throws(() => wordWrap('abc', -1), RangeError);
 });
+
+test('countLines counts each break in a run of LFs', () => {
+  assert.strictEqual(countLines('\n\n'), 2);
+});
