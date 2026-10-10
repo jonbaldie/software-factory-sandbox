@@ -402,6 +402,12 @@ test('slugify handles an empty string', () => {
   assert.equal(slugify(''), '');
 });
 
+test('slugify transliterates German sharp S to ss', () => {
+  assert.equal(slugify('Straße'), 'strasse');
+  assert.equal(slugify('Großer Preis'), 'grosser-preis');
+  assert.equal(slugify('ẞ'), 'ss');
+});
+
 test('titleCase capitalises each word', () => {
   assert.equal(titleCase('hello world'), 'Hello World');
 });

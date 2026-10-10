@@ -166,10 +166,11 @@ reverseWords('one  two three'); // "three two one"
 
 ### `slugify(input)`
 
-Turns a string into a URL-safe slug: lowercases it, strips accents, and replaces runs of other characters with `-`.
+Turns a string into a URL-safe slug: lowercases it, strips accents, converts German `ß` (including uppercase `ẞ`) to `ss`, and replaces runs of other characters with `-`.
 
 ```js
 slugify('Crème Brûlée!'); // "creme-brulee"
+slugify('Straße');        // "strasse"
 ```
 
 ### `snakeCase(input)`

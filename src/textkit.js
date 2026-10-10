@@ -81,8 +81,9 @@ export function pascalCase(input) {
 }
 
 /**
- * Turn a string into a URL-safe slug.
+ * Turn a string into a URL-safe slug, transliterating German sharp S to "ss".
  * @example slugify("Hello, World!") // "hello-world"
+ * @example slugify("Straße") // "strasse"
  * @param {string} input
  * @returns {string}
  */
@@ -91,6 +92,7 @@ export function slugify(input) {
     .normalize('NFKD')
     .replace(/[̀-ͯ]/g, '')
     .toLowerCase()
+    .replace(/ß/g, 'ss')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
