@@ -394,6 +394,10 @@ test('slugify strips accents', () => {
   assert.equal(slugify('Crème Brûlée'), 'creme-brulee');
 });
 
+test('slugify transliterates German sharp s', () => {
+  assert.equal(slugify('Straße'), 'strasse');
+});
+
 test('slugify trims leading and trailing separators', () => {
   assert.equal(slugify('  --Hi there--  '), 'hi-there');
 });
