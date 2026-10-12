@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, countLines, ensurePrefix, ensureSuffix, initials, isBlank, isPalindrome, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from '../src/textkit.js';
 
 test('ensurePrefix leaves input unchanged when it already has the prefix', () => {
   assert.equal(ensurePrefix('https://example.com', 'https://'), 'https://example.com');
@@ -511,6 +511,28 @@ test('countOccurrences returns zero when the search is absent', () => {
 
 test('countOccurrences returns zero for an empty search', () => {
   assert.equal(countOccurrences('abc', ''), 0);
+});
+
+test('countLines returns zero for empty input', () => {
+  assert.equal(countLines(''), 0);
+});
+
+test('countLines counts lines separated by LF, CRLF, and bare CR', () => {
+  assert.equal(countLines('a'), 1);
+  assert.equal(countLines('a\nb'), 2);
+  assert.equal(countLines('a\r\nb'), 2);
+  assert.equal(countLines('a\rb'), 2);
+});
+
+test('countLines includes an empty final line after a trailing separator', () => {
+  assert.equal(countLines('a\n'), 2);
+  assert.equal(countLines('a\r\n'), 2);
+  assert.equal(countLines('a\r'), 2);
+});
+
+test('countLines handles adjacent mixed separators and ignores other Unicode separators', () => {
+  assert.equal(countLines('\n\r\n\r'), 4);
+  assert.equal(countLines('a\u0085b\u2028c\u2029d'), 1);
 });
 
 test('wordWrap greedily wraps words and allows exact-width lines', () => {

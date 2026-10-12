@@ -3,7 +3,7 @@
 Tiny string helpers. The code is a stand-in: the real point of this repo is the **software factory** that builds it, a set of GitHub Actions that turn labelled issues into reviewed, merged pull requests. See [FACTORY.md](FACTORY.md).
 
 ```js
-import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
+import { capitalize, camelCase, collapseWhitespace, countOccurrences, countLines, ensurePrefix, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
 ```
 
 ## API
@@ -49,6 +49,18 @@ Counts occurrences of `search` in `input` from left to right without counting ov
 
 ```js
 countOccurrences('banana', 'an'); // 2
+```
+
+### `countLines(input)`
+
+Counts lines separated by LF, CRLF, or bare CR. Empty input returns `0`, and a trailing separator adds an empty final line. Other Unicode separators are not treated as line breaks.
+
+```js
+countLines('');       // 0
+countLines('a\nb');   // 2
+countLines('a\r\nb'); // 2
+countLines('a\rb');   // 2
+countLines('a\n');    // 2
 ```
 
 ### `ensurePrefix(input, prefix)`

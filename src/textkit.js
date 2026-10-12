@@ -175,6 +175,18 @@ export function countOccurrences(input, search) {
 }
 
 /**
+ * Count lines, treating LF, CRLF, and bare CR as line separators.
+ * An empty string has no lines; a trailing separator adds an empty final line.
+ * @example countLines('a\n') // 2
+ * @param {string} input
+ * @returns {number}
+ */
+export function countLines(input) {
+  if (input === '') return 0;
+  return input.split(/\r\n|\r|\n/u).length;
+}
+
+/**
  * Repeat a string the requested number of times, joining copies with a separator.
  * @example repeatWithSeparator('ab', 3, '-') // "ab-ab-ab"
  * @param {string} s
