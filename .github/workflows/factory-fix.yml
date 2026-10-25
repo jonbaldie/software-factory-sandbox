@@ -112,7 +112,8 @@ jobs:
           index="$RUNNER_TEMP/github-index"
           GIT_INDEX_FILE="$index" git read-tree --empty
           git ls-files --stage -- .github | GIT_INDEX_FILE="$index" git update-index --index-info
-          echo "github_tree=$(GIT_INDEX_FILE="$index" git write-tree)" >> "$GITHUB_OUTPUT"
+          github_tree=$(GIT_INDEX_FILE="$index" git write-tree)
+          echo "github_tree=$github_tree" >> "$GITHUB_OUTPUT"
           rm "$index"
 
       - name: Build the fix prompt
