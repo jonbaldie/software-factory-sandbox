@@ -1,0 +1,1 @@
+Human-authored branch change for software-factory issue 77; preserve exactly.
