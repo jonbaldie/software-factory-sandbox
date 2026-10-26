@@ -27,19 +27,78 @@ jobs:
       - name: File tickets for new TODOs
         run: |
           echo "## 🔭 Scouted TODOs" >> "$GITHUB_STEP_SUMMARY"
-          existing=$(gh issue list --state all --limit 1000 --json title -q '.[].title')
-          # Markdown and .github are skipped because docs and the factory itself mention the marker.
-          { git grep -n -F 'TODO(factory):' -- ':!*.md' ':!.github' || true; } | while IFS= read -r hit; do
-            file=${hit%%:*}
-            line=$(cut -d: -f2 <<<"$hit")
-            title=${hit#*TODO(factory): }
+          # Every issue title, open or closed, however old. `gh issue list` caps at a limit and lists newest first,
+          # so the oldest tickets would drop out. The REST list includes PRs, which have a pull_request key.
+          existing=$(gh api --paginate "repos/$GH_REPO/issues?state=all&per_page=100" \
+            --jq '.[] | select(.pull_request | not) | .title')
+          # Whether JavaScript text ends inside a string literal, so a marker after it is data, not a comment.
+          # A quote straight after a letter or digit, as in JSX text like "Don't", starts no string. A line is read on
+          # its own, so a template literal opened on an earlier line isn't seen.
+          in_js_string() {
+            local s=$1 quote= prev= c rest i
+            for ((i = 0; i < ${#s}; i++)); do
+              c=${s:i:1}
+              if [[ -n $quote ]]; then
+                if [[ $c == '\' ]]; then
+                  i=$((i + 1))
+                elif [[ $c == "$quote" ]]; then
+                  quote=
+                fi
+              elif [[ $c$prev == '//' ]]; then
+                return 1
+              elif [[ $c == / && ${s:i+1:1} == '*' ]]; then
+                rest=${s:i+2}
+                [[ $rest == *'*/'* ]] || return 1
+                rest=${rest#*'*/'}
+                i=$((${#s} - ${#rest} - 1))
+                c=
+              elif [[ $c == '`' || ( $c == [\"\'] && $prev != [[:alnum:]_\$] ) ]]; then
+                quote=$c
+              fi
+              prev=$c
+            done
+            [[ -n $quote ]]
+          }
+          # Markdown (.md and .markdown, in any case) and .github are skipped because docs and the factory itself
+          # mention the marker. MDX is scanned, since it often holds component code.
+          # -z ends the path and line number with NULs, so a path may contain colons. -I skips binary files, whose
+          # "Binary file X matches" line has no NULs and would throw the reads out of step.
+          { git grep -z -n -I -F 'TODO(factory):' -- ':(exclude,icase)*.md' ':(exclude,icase)*.markdown' ':!.github' || true; } |
+          while IFS= read -r -d '' file && IFS= read -r -d '' line && IFS= read -r hit; do
+            opener=${hit%%TODO(factory):*}
+            title=${hit#*TODO(factory):}
+            # In JavaScript and TypeScript, skip markers inside strings and take the first one in a comment.
+            if [[ $file =~ \.[cCmM]?[jJtT][sS][xX]?$ ]]; then
+              while in_js_string "$opener" && [[ $title == *'TODO(factory):'* ]]; do
+                opener+="TODO(factory):${title%%TODO(factory):*}"
+                title=${title#*TODO(factory):}
+              done
+              if in_js_string "$opener"; then
+                echo "- Skipped TODO in a string at $file:$line." >> "$GITHUB_STEP_SUMMARY"
+                continue
+              fi
+            fi
+            title=${title#"${title%%[![:space:]]*}"}
+            # In a block or HTML comment opened before the marker, the first closer ends the title; code after it isn't
+            # part of it. Then drop trailing whitespace, including CRLF's \r.
+            [[ $opener == *'/*'* ]] && title=${title%%'*/'*}
+            [[ $opener == *'<!--'* ]] && title=${title%%'-->'*}
+            title=${title%"${title##*[![:space:]]}"}
+            if [[ -z $title ]]; then
+              echo "- Skipped blank TODO at $file:$line (no text)." >> "$GITHUB_STEP_SUMMARY"
+              continue
+            fi
             if grep -Fxq -- "$title" <<<"$existing"; then
               echo "- Already filed: $title" >> "$GITHUB_STEP_SUMMARY"
               continue
             fi
+            # Percent-encode the path so a space doesn't end GitHub's autolink. Slashes and colons stay as they are;
+            # a literal "%2F" in a name is already "%252F" by then.
+            path=$(jq -rn --arg p "$file" '$p | @uri | gsub("%2F"; "/") | gsub("%3A"; ":")')
             printf 'Found by the scout at %s/%s/blob/%s/%s#L%s. Delete that `TODO(factory):` comment as part of the change.\n' \
-              "$GITHUB_SERVER_URL" "$GH_REPO" "$GITHUB_SHA" "$file" "$line" > "$RUNNER_TEMP/body.md"
+              "$GITHUB_SERVER_URL" "$GH_REPO" "$GITHUB_SHA" "$path" "$line" > "$RUNNER_TEMP/body.md"
             url=$(gh issue create --title "$title" --body-file "$RUNNER_TEMP/body.md" --label needs-triage)
+            existing="$existing"$'\n'"$title"
             echo "- Filed $url: $title" >> "$GITHUB_STEP_SUMMARY"
             # Labels added with GITHUB_TOKEN don't trigger workflows, so start triage explicitly.
             if ! gh workflow run factory-triage.yml -f issue="${url##*/}"; then
@@ -50,6 +109,12 @@ jobs:
 
       - name: Factory report
         run: |
+          # gh lists 30 items unless told otherwise. Fetch one past the cap to tell a full count from a capped one.
+          count() {
+            local n
+            n=$(gh "$@" --limit 1001 --json number -q length)
+            if [ "$n" -gt 1000 ]; then echo "1000+"; else echo "$n"; fi
+          }
           {
             echo
             echo "## 🏭 Factory report"
@@ -57,11 +122,11 @@ jobs:
             echo "| Queue | Open |"
             echo "|---|---|"
             for label in needs-triage ready-for-agent agent:working agent:failed; do
-              echo "| Issues labelled \`$label\` | $(gh issue list --label "$label" --json number -q length) |"
+              echo "| Issues labelled \`$label\` | $(count issue list --label "$label") |"
             done
             for label in agent:review agent:changes-requested agent:approved ready-for-human agent:failed; do
-              echo "| PRs labelled \`$label\` | $(gh pr list --label "$label" --json number -q length) |"
+              echo "| PRs labelled \`$label\` | $(count pr list --label "$label") |"
             done
             since=$(date -u -d '7 days ago' +%F)
-            echo "| Approved PRs merged since $since | $(gh pr list --state merged --label agent:approved --search "merged:>=$since" --json number -q length) |"
+            echo "| Approved PRs merged since $since | $(count pr list --state merged --label agent:approved --search "merged:>=$since") |"
           } >> "$GITHUB_STEP_SUMMARY"
