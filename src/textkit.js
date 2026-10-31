@@ -152,7 +152,7 @@ export function titleCase(input) {
  * @returns {number}
  */
 export function wordCount(input) {
-  return input.match(/[\p{L}\p{N}\p{M}]+(?:[-'’][\p{L}\p{N}\p{M}]+)*/gu)?.length ?? 0;
+  return input.match(/[\p{L}\p{N}][\p{L}\p{N}\p{M}]*(?:[-'’][\p{L}\p{N}\p{M}]+)*/gu)?.length ?? 0;
 }
 
 /**

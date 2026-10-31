@@ -463,6 +463,12 @@ test('wordCount handles apostrophes, Unicode, numbers, and mixed whitespace', ()
   assert.equal(wordCount("L’amour and don't eat crème-brûlée; 42."), 6);
 });
 
+test('wordCount ignores standalone combining marks but includes attached marks', () => {
+  assert.equal(wordCount('\u0301'), 0);
+  assert.equal(wordCount('one \u0301 two'), 2);
+  assert.equal(wordCount('e\u0301'), 1);
+});
+
 test('repeatWithSeparator repeats a string and joins copies with the separator', () => {
   assert.equal(repeatWithSeparator('ab', 3, '-'), 'ab-ab-ab');
 });
