@@ -6,6 +6,8 @@ Tiny string helpers. The code is a stand-in: the real point of this repo is the 
 import { capitalize, camelCase, collapseWhitespace, countOccurrences, ensurePrefix, ensureSuffix, isBlank, isPalindrome, initials, kebabCase, padCenter, padLeftTo, padRightTo, pascalCase, repeatWithSeparator, reverseWords, slugify, snakeCase, stripPrefix, stripSuffix, swapCase, titleCase, truncate, wordCount, wordWrap } from './src/textkit.js';
 ```
 
+The [exploratory testing report](docs/exploratory-testing/2026-10-31-textkit.md) records API journeys and known findings.
+
 ## API
 
 ### `capitalize(input)`

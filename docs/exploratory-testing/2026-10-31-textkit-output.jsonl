@@ -1,0 +1,10 @@
+{"name":"camelCase ordinary","expected":"helloWorldFoo","actual":"helloWorldFoo","matches":true}
+{"name":"camelCase supplementary letter","expected":"hello𐐀orld","actual":"hello𐐨orld","matches":false}
+{"name":"pascalCase supplementary letter","expected":"Hello𐐀orld","actual":"Hello𐐨orld","matches":false}
+{"name":"wordCount ordinary","expected":2,"actual":2,"matches":true}
+{"name":"wordCount combining mark alone","expected":0,"actual":1,"matches":false}
+{"name":"wordCount combining mark between words","expected":2,"actual":3,"matches":false}
+{"name":"wordWrap ordinary","expected":"The quick\nbrown fox","actual":"The quick\nbrown fox","matches":true}
+{"name":"wordWrap Unicode","expected":"😀😀\n😀\nok","actual":"😀😀\n😀\nok","matches":true}
+{"name":"truncate ordinary","expected":"The quick…","actual":"The quick…","matches":true}
+{"name":"truncate Unicode","expected":"😀😀…","actual":"😀😀…","matches":true}
