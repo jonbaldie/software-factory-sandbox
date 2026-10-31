@@ -362,6 +362,11 @@ test('pascalCase capitalises accented Unicode words', () => {
   assert.equal(pascalCase('élan vital'), 'ÉlanVital');
 });
 
+test('pascalCase capitalises supplementary-plane initials in later words', () => {
+  assert.equal(pascalCase('a 𐐨'), 'A𐐀');
+  assert.equal(pascalCase('hello 𐐨orld'), 'Hello𐐀orld');
+});
+
 test('camelCase splits words at spaces, hyphens, and underscores', () => {
   assert.equal(camelCase('Hello-World_foo bar'), 'helloWorldFooBar');
 });
@@ -380,6 +385,11 @@ test('camelCase keeps numeric words in sequence', () => {
 
 test('camelCase keeps accented letters', () => {
   assert.equal(camelCase('élan vital'), 'élanVital');
+});
+
+test('camelCase capitalises supplementary-plane initials in later words', () => {
+  assert.equal(camelCase('a 𐐨'), 'a𐐀');
+  assert.equal(camelCase('hello 𐐨orld'), 'hello𐐀orld');
 });
 
 test('camelCase returns empty for empty or separator-only input', () => {
