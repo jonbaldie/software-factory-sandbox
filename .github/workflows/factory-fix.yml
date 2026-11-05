@@ -107,6 +107,7 @@ jobs:
             fi
           fi
           guard=$(git --no-replace-objects show "$base_sha:.github/factory/protected-tree.sh")
+          echo "guard_digest=$(printf '%s' "$guard" | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
           if ! github_tree=$(bash -c "$guard" -- capture-index); then
             echo "::error::The branch conflicts with $BASE under .github/. The factory owns that folder."
             exit 1
@@ -176,6 +177,7 @@ jobs:
           PUBLISH_TOKEN: ${{ steps.publisher.outputs.token || github.token }}
           BRANCH: ${{ steps.pr.outputs.branch }}
           BASE_SHA: ${{ steps.revision.outputs.base_sha }}
+          GUARD_DIGEST: ${{ steps.revision.outputs.guard_digest }}
           GITHUB_TREE: ${{ steps.revision.outputs.github_tree }}
           AGENT_SUMMARY: ${{ steps.agent.outputs.result }}
           STARTED_SHA: ${{ steps.revision.outputs.sha }}
@@ -196,6 +198,10 @@ jobs:
           require_current_head
           git add -A
           guard=$(git --no-replace-objects show "$BASE_SHA:.github/factory/protected-tree.sh")
+          if [ "$(printf '%s' "$guard" | sha256sum | cut -d' ' -f1)" != "$GUARD_DIGEST" ]; then
+            echo "::error::The protected-tree guard changed after the agent ran"
+            exit 1
+          fi
           if ! bash -c "$guard" -- verify "$GITHUB_TREE"; then
             echo "::error::The agent changed files under .github/. The factory owns that folder."
             exit 1
