@@ -99,6 +99,7 @@ jobs:
           baseline=$(bash -c "$guard" -- capture-revision "$merge_base")
           echo "baseline=$baseline" >> "$GITHUB_OUTPUT"
           echo "merge_base=$merge_base" >> "$GITHUB_OUTPUT"
+          echo "history_digest=$(bash -c "$guard" -- capture-history "$GITHUB_SHA")" >> "$GITHUB_OUTPUT"
           echo "guard_digest=$(printf '%s' "$guard" | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
 
       - name: Set up the project
@@ -173,6 +174,7 @@ jobs:
           PUBLISH_TOKEN: ${{ steps.publisher.outputs.token || github.token }}
           PROTECTED_BASELINE: ${{ steps.claim.outputs.baseline }}
           PROTECTED_MERGE_BASE: ${{ steps.claim.outputs.merge_base }}
+          PROTECTED_HISTORY: ${{ steps.claim.outputs.history_digest }}
           GUARD_DIGEST: ${{ steps.claim.outputs.guard_digest }}
         run: |
           branch="agent/issue-$ISSUE"
@@ -185,7 +187,7 @@ jobs:
             echo "::error::The protected-tree guard changed after the agent ran"
             exit 1
           fi
-          if ! bash -c "$guard" -- verify "$PROTECTED_BASELINE" "$PROTECTED_MERGE_BASE" "$GITHUB_SHA"; then
+          if ! bash -c "$guard" -- verify "$PROTECTED_BASELINE" "$PROTECTED_MERGE_BASE" "$GITHUB_SHA" "$PROTECTED_HISTORY"; then
             echo "::error::The agent changed files under .github/, which the factory owns"
             exit 1
           fi
@@ -237,6 +239,7 @@ jobs:
           JOB_STATUS: ${{ job.status }}
           PROTECTED_BASELINE: ${{ steps.claim.outputs.baseline }}
           PROTECTED_MERGE_BASE: ${{ steps.claim.outputs.merge_base }}
+          PROTECTED_HISTORY: ${{ steps.claim.outputs.history_digest }}
           GUARD_DIGEST: ${{ steps.claim.outputs.guard_digest }}
         run: |
           # Once the PR exists, review is the stage to retry: an implementation retry leaves an open PR alone.
@@ -272,7 +275,7 @@ jobs:
             guard=$(git --no-replace-objects show "$GITHUB_SHA:.github/factory/protected-tree.sh") &&
             [ "$(printf '%s' "$guard" | sha256sum | cut -d' ' -f1)" = "$GUARD_DIGEST" ] &&
             bash -c "$guard" -- clean && git add -A &&
-            bash -c "$guard" -- verify "$PROTECTED_BASELINE" "$PROTECTED_MERGE_BASE" "$GITHUB_SHA"; then
+            bash -c "$guard" -- verify "$PROTECTED_BASELINE" "$PROTECTED_MERGE_BASE" "$GITHUB_SHA" "$PROTECTED_HISTORY"; then
             if [ "$JOB_STATUS" = cancelled ]; then reason="The run timed out or was cancelled."
             elif [ "$TESTS_OUTCOME" = failure ]; then reason="The tests failed."
             elif [ "$AGENT_OUTCOME" = failure ]; then reason="The agent stopped with an error."
