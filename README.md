@@ -224,3 +224,5 @@ Greedily wraps words in order, joining them with single spaces and separating li
 wordWrap('The quick brown fox', 10); // "The quick\nbrown fox"
 wordWrap('abcdefghij', 4);           // "abcd\nefgh\nij"
 ```
+
+Issue 90 fix marker: wrong.
