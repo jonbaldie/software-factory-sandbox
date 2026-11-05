@@ -22,6 +22,7 @@ case "${1:-}" in
     [ -z "$(git status --porcelain -- .github)" ]
     ;;
   verify)
+    git fsck --full --no-reflogs --no-dangling >/dev/null
     baseline=$2
     if [ "$#" -eq 4 ]; then
       current=$(git merge-base HEAD "$4")
