@@ -37,13 +37,11 @@ case "${1:-}" in
     if [ "$#" -eq 4 ]; then
       history=$(history_digest "$3") || exit 1
       [ "$history" = "$4" ] || exit 1
-      # Match the original merge-base behavior, including resets to older revisions.
-      # The pinned start history bounds both forward and backward baseline changes.
-      current=$(git -c core.commitGraph=false merge-base HEAD "$3") || exit 1
-      git -c core.commitGraph=false merge-base --is-ancestor "$current" "$3" || exit 1
-      actual=$(git cat-file commit "$current" | git hash-object -t commit --stdin) || exit 1
-      [ "$actual" = "$current" ] || exit 1
-      baseline=$current
+      trusted_merge_base=$(git -c core.commitGraph=false merge-base HEAD "$3") || exit 1
+      git -c core.commitGraph=false merge-base --is-ancestor "$trusted_merge_base" "$3" || exit 1
+      actual=$(git cat-file commit "$trusted_merge_base" | git hash-object -t commit --stdin) || exit 1
+      [ "$actual" = "$trusted_merge_base" ] || exit 1
+      baseline=$trusted_merge_base
     fi
     root=$(git rev-parse --verify "$baseline^{tree}")
     verify_tree() {
