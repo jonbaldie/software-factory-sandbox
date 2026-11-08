@@ -1,0 +1,5 @@
+$ npm_config_cache=<worktree>/.scratch/npm-cache TMPDIR=<worktree>/.scratch/tmp npm ci --ignore-scripts
+
+up to date, audited 1 package in 166ms
+
+found 0 vulnerabilities

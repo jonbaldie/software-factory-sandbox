@@ -1,0 +1,19 @@
+{"name":"center ordinary","expected":"*ab**","actual":"*ab**","matches":true}
+{"name":"center decomposed input","expected":"  é  ","actual":"  é  ","matches":true}
+{"name":"center combining fill cluster count","expected":5,"actual":2,"matches":false}
+{"name":"center joining fill cluster count","expected":5,"actual":2,"matches":false}
+{"name":"left emoji fill","expected":"😀😀7","actual":"😀😀7","matches":true}
+{"name":"right emoji fill","expected":"ab😀😀","actual":"ab😀😀","matches":true}
+{"name":"wrap ordinary","expected":"The quick\nbrown fox","actual":"The quick\nbrown fox","matches":true}
+{"name":"wrap long emoji word","expected":"😀😀\n😀\nok","actual":"😀😀\n😀\nok","matches":true}
+{"name":"truncate ordinary","expected":"The quick…","actual":"The quick…","matches":true}
+{"name":"truncate emoji word","expected":"😀😀…","actual":"😀😀…","matches":true}
+{"name":"prefix ordinary","expected":"https://example.com","actual":"https://example.com","matches":true}
+{"name":"prefix already present","expected":"https://example.com","actual":"https://example.com","matches":true}
+{"name":"strip one prefix","expected":"v1","actual":"v1","matches":true}
+{"name":"suffix ordinary","expected":"report.txt","actual":"report.txt","matches":true}
+{"name":"suffix already present","expected":"report.txt","actual":"report.txt","matches":true}
+{"name":"strip one suffix","expected":"report.txt","actual":"report.txt","matches":true}
+{"name":"strip empty suffix","expected":"report","actual":"report","matches":true}
+{"fill":"́","output":"́́á́","graphemes":2}
+{"fill":"‍","output":"‍‍a‍‍","graphemes":2}
