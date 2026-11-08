@@ -1,0 +1,18 @@
+**Verdict: PASS+NOTES.** The finding holds, the replay reproduces against both `origin/main` and the worktree, and the docs are safe to merge. A few statements in the report and the decision trail are out of date or have no evidence behind them. I didn't edit or post anything.
+
+## What I checked
+- **Diff:** Outside the new report folder, the only change is one line in `README.md`, and its links point to files that exist. Nothing in `src/`, `test/` or the package files changed, the README API section is untouched, and there are no whitespace errors.
+- **Replay:** `src/textkit.js` is byte-identical in the worktree and on `origin/main`. I ran `replay.mjs` against both, loading the `origin/main` copy without writing any files. Both outputs match `run-1.jsonl` byte for byte, and `run-1` matches `run-2`. Node and npm versions match the report, and `node --test` passes 132 of 132.
+- **The finding follows the documented contract:** `README.md:137` says `padCenter` measures width in grapheme clusters and accepts any fill that is exactly one Unicode code point. U+0301 (a combining accent) and U+200D (a zero-width joiner) are each one code point, so they pass the fill check. But they attach to the neighbouring character when the text is split into grapheme clusters, so the output is 2 clusters instead of 5. The report rightly calls this a contract ambiguity and doesn't prescribe a fix.
+- **Other journeys:** The padding, wrapping, truncation and affix results all match the README contracts.
+- **Related issues:** #46 was about decomposed input (fixed in PR #51), #146 is about performance, and #117 was closed as won't-fix because its expected result was wrong. The report describes all three correctly.
+
+## Notes
+1. **The triage status is out of date.** The report says the issue was "filed for triage" and "leaves the contract decision to triage". `decisions.tsv` says "Bug and needs-triage labels applied". But #174 was already triaged at 01:33:35Z: `needs-triage` was removed, `ready-for-human` was added, and the triage comment asks a human to choose the fill policy.
+2. **The decision trail was written after the fact.** All four rows in `decisions.tsv` have the same timestamp, 01:33:07Z. Issue #174 was created at 01:32:25Z, so the scope, setup and replay rows were written after it was filed. The timestamps show when the rows were written, not when the decisions were made.
+3. **Some setup claims have no evidence.** The report mentions `npm ci --ignore-scripts`, a worktree-local cache and temp directory, a separate worktree and a "locked install". `install.txt` records none of the command, flags or cache path. The only trace is the untracked `.scratch/npm-cache`.
+4. **The replay link in issue #174 is currently broken.** It points to `replay.mjs` on `docs/explore-textkit-20261108`, which isn't on origin yet. It will break again if the branch is deleted after merge, so it should be repointed to `main` once this merges.
+5. **`teardown.txt` proves nothing.** `run.sh` writes the same fixed sentence on every exit, including failures. Re-running `run.sh` also overwrites the committed evidence files.
+6. **`.scratch/` is untracked and not ignored.** It holds `npm-cache/` and `issue.md`, so keep it out of the commit (avoid `git add -A`).
+
+None of these block merging. Notes 1–3 are worth fixing in the report and `decisions.tsv` before merge if the decision trail needs to be accurate.

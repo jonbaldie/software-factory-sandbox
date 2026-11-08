@@ -1,0 +1,7 @@
+ts	phase	decision	why	evidence	result
+2026-11-08T01:33:07Z	scope	Selected padding, line fitting, and affixes	These are documented consumer goals with distinct variations	README.md	Three journeys selected
+2026-11-08T01:33:07Z	setup	Used a fresh worktree and local npm cache	Keep dependencies and scratch data isolated	docs/exploratory-testing/2026-11-08-textkit/install.txt	Locked install and 132 tests passed
+2026-11-08T01:33:07Z	replay	Ran the public API twice in fresh processes	Check literal outcomes and repeat the padding discrepancy	docs/exploratory-testing/2026-11-08-textkit/run-1.jsonl	Combining and joining fills yielded two clusters rather than five
+2026-11-08T01:33:07Z	triage	Filed the fill discrepancy as issue 174	Prior padding issue covered input and performance issue covers allocation	https://github.com/jonbaldie/software-factory-sandbox/issues/174	Bug and needs-triage labels applied
+2026-11-08T01:35:29Z	audit	Recorded the initial decisions after they happened	The row timestamps are log times, not action times	docs/exploratory-testing/2026-11-08-textkit/decisions.tsv	Timing clarified
+2026-11-08T01:35:29Z	review	Corrected issue status and captured a second locked install	Independent review found stale status and setup output without the command	docs/exploratory-testing/2026-11-08-textkit/install.txt	Issue now needs a human policy decision

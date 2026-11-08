@@ -1,0 +1,806 @@
+
+> textkit@0.1.1 test
+> node --test
+
+TAP version 13
+# Subtest: factory merge smoke preserves the base update
+ok 1 - factory merge smoke preserves the base update
+  ---
+  duration_ms: 4.653911
+  type: 'test'
+  ...
+# Subtest: factory merge smoke preserves the branch update
+ok 2 - factory merge smoke preserves the branch update
+  ---
+  duration_ms: 4.50121
+  type: 'test'
+  ...
+# Subtest: ensurePrefix leaves input unchanged when it already has the prefix
+ok 3 - ensurePrefix leaves input unchanged when it already has the prefix
+  ---
+  duration_ms: 8.455518
+  type: 'test'
+  ...
+# Subtest: ensurePrefix adds a missing prefix
+ok 4 - ensurePrefix adds a missing prefix
+  ---
+  duration_ms: 0.491284
+  type: 'test'
+  ...
+# Subtest: ensurePrefix returns the prefix for empty input
+ok 5 - ensurePrefix returns the prefix for empty input
+  ---
+  duration_ms: 0.246799
+  type: 'test'
+  ...
+# Subtest: ensurePrefix leaves input unchanged for an empty prefix
+ok 6 - ensurePrefix leaves input unchanged for an empty prefix
+  ---
+  duration_ms: 0.257681
+  type: 'test'
+  ...
+# Subtest: ensurePrefix matches prefixes case-sensitively
+ok 7 - ensurePrefix matches prefixes case-sensitively
+  ---
+  duration_ms: 0.29264
+  type: 'test'
+  ...
+# Subtest: stripPrefix removes a matching leading prefix
+ok 8 - stripPrefix removes a matching leading prefix
+  ---
+  duration_ms: 0.29624
+  type: 'test'
+  ...
+# Subtest: stripPrefix leaves a substring after the start unchanged
+ok 9 - stripPrefix leaves a substring after the start unchanged
+  ---
+  duration_ms: 0.272619
+  type: 'test'
+  ...
+# Subtest: stripPrefix leaves an empty input unchanged
+ok 10 - stripPrefix leaves an empty input unchanged
+  ---
+  duration_ms: 0.264929
+  type: 'test'
+  ...
+# Subtest: stripPrefix leaves input unchanged for an empty prefix
+ok 11 - stripPrefix leaves input unchanged for an empty prefix
+  ---
+  duration_ms: 0.838186
+  type: 'test'
+  ...
+# Subtest: stripPrefix leaves input unchanged when the prefix is longer
+ok 12 - stripPrefix leaves input unchanged when the prefix is longer
+  ---
+  duration_ms: 0.910802
+  type: 'test'
+  ...
+# Subtest: stripPrefix matches prefixes case-sensitively
+ok 13 - stripPrefix matches prefixes case-sensitively
+  ---
+  duration_ms: 0.439114
+  type: 'test'
+  ...
+# Subtest: stripPrefix removes a Unicode prefix
+ok 14 - stripPrefix removes a Unicode prefix
+  ---
+  duration_ms: 0.235255
+  type: 'test'
+  ...
+# Subtest: stripPrefix removes only one matching prefix
+ok 15 - stripPrefix removes only one matching prefix
+  ---
+  duration_ms: 0.201364
+  type: 'test'
+  ...
+# Subtest: ensurePrefix preserves matching Unicode input
+ok 16 - ensurePrefix preserves matching Unicode input
+  ---
+  duration_ms: 0.209996
+  type: 'test'
+  ...
+# Subtest: swapCase flips uppercase and lowercase letters in mixed-case input
+ok 17 - swapCase flips uppercase and lowercase letters in mixed-case input
+  ---
+  duration_ms: 0.315914
+  type: 'test'
+  ...
+# Subtest: swapCase returns empty for empty input
+ok 18 - swapCase returns empty for empty input
+  ---
+  duration_ms: 0.244494
+  type: 'test'
+  ...
+# Subtest: swapCase leaves digits, punctuation, emoji, and combining marks unchanged
+ok 19 - swapCase leaves digits, punctuation, emoji, and combining marks unchanged
+  ---
+  duration_ms: 0.248072
+  type: 'test'
+  ...
+# Subtest: swapCase supports expanding uppercase mappings
+ok 20 - swapCase supports expanding uppercase mappings
+  ---
+  duration_ms: 0.20605
+  type: 'test'
+  ...
+# Subtest: swapCase processes supplementary letters as single code points
+ok 21 - swapCase processes supplementary letters as single code points
+  ---
+  duration_ms: 0.22051
+  type: 'test'
+  ...
+# Subtest: stripSuffix removes a matching trailing suffix
+ok 22 - stripSuffix removes a matching trailing suffix
+  ---
+  duration_ms: 0.26541
+  type: 'test'
+  ...
+# Subtest: stripSuffix leaves input unchanged when suffix is absent
+ok 23 - stripSuffix leaves input unchanged when suffix is absent
+  ---
+  duration_ms: 0.192766
+  type: 'test'
+  ...
+# Subtest: stripSuffix leaves input unchanged for an empty suffix
+ok 24 - stripSuffix leaves input unchanged for an empty suffix
+  ---
+  duration_ms: 0.319925
+  type: 'test'
+  ...
+# Subtest: stripSuffix leaves an empty input unchanged
+ok 25 - stripSuffix leaves an empty input unchanged
+  ---
+  duration_ms: 0.220775
+  type: 'test'
+  ...
+# Subtest: stripSuffix leaves input unchanged when suffix is longer
+ok 26 - stripSuffix leaves input unchanged when suffix is longer
+  ---
+  duration_ms: 0.192724
+  type: 'test'
+  ...
+# Subtest: stripSuffix matches suffixes case-sensitively
+ok 27 - stripSuffix matches suffixes case-sensitively
+  ---
+  duration_ms: 0.193846
+  type: 'test'
+  ...
+# Subtest: stripSuffix removes a Unicode suffix
+ok 28 - stripSuffix removes a Unicode suffix
+  ---
+  duration_ms: 0.190609
+  type: 'test'
+  ...
+# Subtest: stripSuffix removes only one repeated suffix
+ok 29 - stripSuffix removes only one repeated suffix
+  ---
+  duration_ms: 0.231543
+  type: 'test'
+  ...
+# Subtest: ensureSuffix appends a missing suffix
+ok 30 - ensureSuffix appends a missing suffix
+  ---
+  duration_ms: 0.257936
+  type: 'test'
+  ...
+# Subtest: ensureSuffix does not duplicate an existing suffix
+ok 31 - ensureSuffix does not duplicate an existing suffix
+  ---
+  duration_ms: 0.198831
+  type: 'test'
+  ...
+# Subtest: ensureSuffix appends a suffix to empty input
+ok 32 - ensureSuffix appends a suffix to empty input
+  ---
+  duration_ms: 0.261273
+  type: 'test'
+  ...
+# Subtest: ensureSuffix leaves input unchanged for an empty suffix
+ok 33 - ensureSuffix leaves input unchanged for an empty suffix
+  ---
+  duration_ms: 0.216827
+  type: 'test'
+  ...
+# Subtest: ensureSuffix matches suffixes case-sensitively
+ok 34 - ensureSuffix matches suffixes case-sensitively
+  ---
+  duration_ms: 0.199291
+  type: 'test'
+  ...
+# Subtest: kebabCase lowercases words and joins them with hyphens
+ok 35 - kebabCase lowercases words and joins them with hyphens
+  ---
+  duration_ms: 2.481562
+  type: 'test'
+  ...
+# Subtest: kebabCase splits camelCase boundaries
+ok 36 - kebabCase splits camelCase boundaries
+  ---
+  duration_ms: 0.24637
+  type: 'test'
+  ...
+# Subtest: kebabCase returns empty for empty input
+ok 37 - kebabCase returns empty for empty input
+  ---
+  duration_ms: 0.314641
+  type: 'test'
+  ...
+# Subtest: kebabCase ignores punctuation and repeated separators
+ok 38 - kebabCase ignores punctuation and repeated separators
+  ---
+  duration_ms: 0.24434
+  type: 'test'
+  ...
+# Subtest: kebabCase keeps Unicode letters and numbers
+ok 39 - kebabCase keeps Unicode letters and numbers
+  ---
+  duration_ms: 1.480288
+  type: 'test'
+  ...
+# Subtest: capitalize uppercases the first character
+ok 40 - capitalize uppercases the first character
+  ---
+  duration_ms: 0.316381
+  type: 'test'
+  ...
+# Subtest: capitalize leaves the suffix unchanged
+ok 41 - capitalize leaves the suffix unchanged
+  ---
+  duration_ms: 0.284209
+  type: 'test'
+  ...
+# Subtest: capitalize does not skip leading whitespace
+ok 42 - capitalize does not skip leading whitespace
+  ---
+  duration_ms: 0.206721
+  type: 'test'
+  ...
+# Subtest: capitalize does not skip leading punctuation
+ok 43 - capitalize does not skip leading punctuation
+  ---
+  duration_ms: 0.206156
+  type: 'test'
+  ...
+# Subtest: capitalize returns empty for empty input
+ok 44 - capitalize returns empty for empty input
+  ---
+  duration_ms: 0.208428
+  type: 'test'
+  ...
+# Subtest: capitalize preserves Unicode uppercase mappings that expand
+ok 45 - capitalize preserves Unicode uppercase mappings that expand
+  ---
+  duration_ms: 0.21388
+  type: 'test'
+  ...
+# Subtest: capitalize handles a supplementary Unicode first code point
+ok 46 - capitalize handles a supplementary Unicode first code point
+  ---
+  duration_ms: 0.223375
+  type: 'test'
+  ...
+# Subtest: capitalize leaves a non-letter first code point unchanged
+ok 47 - capitalize leaves a non-letter first code point unchanged
+  ---
+  duration_ms: 0.199126
+  type: 'test'
+  ...
+# Subtest: snakeCase lowercases words and joins them with underscores
+ok 48 - snakeCase lowercases words and joins them with underscores
+  ---
+  duration_ms: 0.610697
+  type: 'test'
+  ...
+# Subtest: snakeCase does not split camelCase boundaries
+ok 49 - snakeCase does not split camelCase boundaries
+  ---
+  duration_ms: 0.234822
+  type: 'test'
+  ...
+# Subtest: snakeCase treats punctuation and repeated whitespace as word separators
+ok 50 - snakeCase treats punctuation and repeated whitespace as word separators
+  ---
+  duration_ms: 0.207624
+  type: 'test'
+  ...
+# Subtest: snakeCase returns empty for empty input
+ok 51 - snakeCase returns empty for empty input
+  ---
+  duration_ms: 0.193521
+  type: 'test'
+  ...
+# Subtest: snakeCase keeps Unicode letters and digits in words
+ok 52 - snakeCase keeps Unicode letters and digits in words
+  ---
+  duration_ms: 0.228982
+  type: 'test'
+  ...
+# Subtest: collapseWhitespace replaces runs of whitespace with one space and trims ends
+ok 53 - collapseWhitespace replaces runs of whitespace with one space and trims ends
+  ---
+  duration_ms: 0.336763
+  type: 'test'
+  ...
+# Subtest: collapseWhitespace returns empty for empty or whitespace-only input
+ok 54 - collapseWhitespace returns empty for empty or whitespace-only input
+  ---
+  duration_ms: 2.755054
+  type: 'test'
+  ...
+# Subtest: isBlank returns true for an empty string
+ok 55 - isBlank returns true for an empty string
+  ---
+  duration_ms: 0.268759
+  type: 'test'
+  ...
+# Subtest: isBlank returns true for a whitespace-only string
+ok 56 - isBlank returns true for a whitespace-only string
+  ---
+  duration_ms: 0.211065
+  type: 'test'
+  ...
+# Subtest: isBlank returns false for nonblank text surrounded by whitespace
+ok 57 - isBlank returns false for nonblank text surrounded by whitespace
+  ---
+  duration_ms: 0.231858
+  type: 'test'
+  ...
+# Subtest: isPalindrome ignores case and non-alphanumeric characters
+ok 58 - isPalindrome ignores case and non-alphanumeric characters
+  ---
+  duration_ms: 1.515581
+  type: 'test'
+  ...
+# Subtest: isPalindrome returns false for non-palindromic input
+ok 59 - isPalindrome returns false for non-palindromic input
+  ---
+  duration_ms: 0.198238
+  type: 'test'
+  ...
+# Subtest: isPalindrome returns true for empty input
+ok 60 - isPalindrome returns true for empty input
+  ---
+  duration_ms: 0.212008
+  type: 'test'
+  ...
+# Subtest: isPalindrome recognizes Unicode letters and digits
+ok 61 - isPalindrome recognizes Unicode letters and digits
+  ---
+  duration_ms: 0.276343
+  type: 'test'
+  ...
+# Subtest: initials uppercases and joins the first letter of each word
+ok 62 - initials uppercases and joins the first letter of each word
+  ---
+  duration_ms: 0.418603
+  type: 'test'
+  ...
+# Subtest: initials handles repeated and surrounding spaces
+ok 63 - initials handles repeated and surrounding spaces
+  ---
+  duration_ms: 0.187116
+  type: 'test'
+  ...
+# Subtest: initials treats tabs and line breaks as word separators
+ok 64 - initials treats tabs and line breaks as word separators
+  ---
+  duration_ms: 0.184069
+  type: 'test'
+  ...
+# Subtest: initials returns empty for empty input
+ok 65 - initials returns empty for empty input
+  ---
+  duration_ms: 0.195688
+  type: 'test'
+  ...
+# Subtest: initials uppercases accented Unicode letters
+ok 66 - initials uppercases accented Unicode letters
+  ---
+  duration_ms: 0.200285
+  type: 'test'
+  ...
+# Subtest: initials appends the separator after every initial
+ok 67 - initials appends the separator after every initial
+  ---
+  duration_ms: 0.178724
+  type: 'test'
+  ...
+# Subtest: padCenter centres input and puts an uneven extra fill character on the right
+ok 68 - padCenter centres input and puts an uneven extra fill character on the right
+  ---
+  duration_ms: 21.93441
+  type: 'test'
+  ...
+# Subtest: padCenter handles empty and Unicode strings and leaves fitting strings unchanged
+ok 69 - padCenter handles empty and Unicode strings and leaves fitting strings unchanged
+  ---
+  duration_ms: 0.425234
+  type: 'test'
+  ...
+# Subtest: padCenter measures width in grapheme clusters
+ok 70 - padCenter measures width in grapheme clusters
+  ---
+  duration_ms: 0.357172
+  type: 'test'
+  ...
+# Subtest: padCenter rejects fills that are not exactly one character
+ok 71 - padCenter rejects fills that are not exactly one character
+  ---
+  duration_ms: 1.058658
+  type: 'test'
+  ...
+# Subtest: padLeftTo pads the input on the left
+ok 72 - padLeftTo pads the input on the left
+  ---
+  duration_ms: 0.288482
+  type: 'test'
+  ...
+# Subtest: padLeftTo handles empty and Unicode strings and leaves fitting strings unchanged
+ok 73 - padLeftTo handles empty and Unicode strings and leaves fitting strings unchanged
+  ---
+  duration_ms: 0.262883
+  type: 'test'
+  ...
+# Subtest: padLeftTo rejects fills that are not exactly one character
+ok 74 - padLeftTo rejects fills that are not exactly one character
+  ---
+  duration_ms: 0.391714
+  type: 'test'
+  ...
+# Subtest: padRightTo pads the input on the right
+ok 75 - padRightTo pads the input on the right
+  ---
+  duration_ms: 0.286374
+  type: 'test'
+  ...
+# Subtest: padRightTo handles empty and Unicode strings and leaves fitting strings unchanged
+ok 76 - padRightTo handles empty and Unicode strings and leaves fitting strings unchanged
+  ---
+  duration_ms: 0.219798
+  type: 'test'
+  ...
+# Subtest: padRightTo rejects fills that are not exactly one character
+ok 77 - padRightTo rejects fills that are not exactly one character
+  ---
+  duration_ms: 0.608195
+  type: 'test'
+  ...
+# Subtest: reverseWords reverses whitespace-separated words with single spaces
+ok 78 - reverseWords reverses whitespace-separated words with single spaces
+  ---
+  duration_ms: 0.404855
+  type: 'test'
+  ...
+# Subtest: reverseWords returns empty for empty or whitespace-only input
+ok 79 - reverseWords returns empty for empty or whitespace-only input
+  ---
+  duration_ms: 0.272151
+  type: 'test'
+  ...
+# Subtest: camelCase joins words with a lowercase first word and camel-cased remainder
+ok 80 - camelCase joins words with a lowercase first word and camel-cased remainder
+  ---
+  duration_ms: 0.582
+  type: 'test'
+  ...
+# Subtest: pascalCase capitalises the first word and joins words without separators
+ok 81 - pascalCase capitalises the first word and joins words without separators
+  ---
+  duration_ms: 0.250436
+  type: 'test'
+  ...
+# Subtest: pascalCase splits words at spaces, hyphens, and underscores
+ok 82 - pascalCase splits words at spaces, hyphens, and underscores
+  ---
+  duration_ms: 0.222062
+  type: 'test'
+  ...
+# Subtest: pascalCase lowercases uppercase input before capitalising each word
+ok 83 - pascalCase lowercases uppercase input before capitalising each word
+  ---
+  duration_ms: 0.237811
+  type: 'test'
+  ...
+# Subtest: pascalCase ignores leading, trailing, and repeated separators
+ok 84 - pascalCase ignores leading, trailing, and repeated separators
+  ---
+  duration_ms: 0.187779
+  type: 'test'
+  ...
+# Subtest: pascalCase returns empty for empty or separator-only input
+ok 85 - pascalCase returns empty for empty or separator-only input
+  ---
+  duration_ms: 0.271074
+  type: 'test'
+  ...
+# Subtest: pascalCase keeps numeric words in sequence
+ok 86 - pascalCase keeps numeric words in sequence
+  ---
+  duration_ms: 0.214188
+  type: 'test'
+  ...
+# Subtest: pascalCase capitalises accented Unicode words
+ok 87 - pascalCase capitalises accented Unicode words
+  ---
+  duration_ms: 0.209215
+  type: 'test'
+  ...
+# Subtest: pascalCase capitalises supplementary-plane initials in later words
+ok 88 - pascalCase capitalises supplementary-plane initials in later words
+  ---
+  duration_ms: 0.304974
+  type: 'test'
+  ...
+# Subtest: camelCase splits words at spaces, hyphens, and underscores
+ok 89 - camelCase splits words at spaces, hyphens, and underscores
+  ---
+  duration_ms: 0.196194
+  type: 'test'
+  ...
+# Subtest: camelCase lowercases uppercase input
+ok 90 - camelCase lowercases uppercase input
+  ---
+  duration_ms: 0.200888
+  type: 'test'
+  ...
+# Subtest: camelCase ignores leading, trailing, and repeated separators
+ok 91 - camelCase ignores leading, trailing, and repeated separators
+  ---
+  duration_ms: 0.167243
+  type: 'test'
+  ...
+# Subtest: camelCase keeps numeric words in sequence
+ok 92 - camelCase keeps numeric words in sequence
+  ---
+  duration_ms: 0.179547
+  type: 'test'
+  ...
+# Subtest: camelCase keeps accented letters
+ok 93 - camelCase keeps accented letters
+  ---
+  duration_ms: 0.164682
+  type: 'test'
+  ...
+# Subtest: camelCase capitalises supplementary-plane initials in later words
+ok 94 - camelCase capitalises supplementary-plane initials in later words
+  ---
+  duration_ms: 0.188506
+  type: 'test'
+  ...
+# Subtest: camelCase returns empty for empty or separator-only input
+ok 95 - camelCase returns empty for empty or separator-only input
+  ---
+  duration_ms: 0.217186
+  type: 'test'
+  ...
+# Subtest: slugify lowercases and hyphenates
+ok 96 - slugify lowercases and hyphenates
+  ---
+  duration_ms: 0.47581
+  type: 'test'
+  ...
+# Subtest: slugify strips accents
+ok 97 - slugify strips accents
+  ---
+  duration_ms: 0.312556
+  type: 'test'
+  ...
+# Subtest: slugify trims leading and trailing separators
+ok 98 - slugify trims leading and trailing separators
+  ---
+  duration_ms: 0.217155
+  type: 'test'
+  ...
+# Subtest: slugify handles an empty string
+ok 99 - slugify handles an empty string
+  ---
+  duration_ms: 0.176159
+  type: 'test'
+  ...
+# Subtest: titleCase capitalises each word
+ok 100 - titleCase capitalises each word
+  ---
+  duration_ms: 3.802135
+  type: 'test'
+  ...
+# Subtest: titleCase capitalises words beginning with accented letters
+ok 101 - titleCase capitalises words beginning with accented letters
+  ---
+  duration_ms: 0.215127
+  type: 'test'
+  ...
+# Subtest: titleCase keeps apostrophes within words and capitalises hyphenated parts
+ok 102 - titleCase keeps apostrophes within words and capitalises hyphenated parts
+  ---
+  duration_ms: 1.772146
+  type: 'test'
+  ...
+# Subtest: titleCase handles an empty string
+ok 103 - titleCase handles an empty string
+  ---
+  duration_ms: 0.193836
+  type: 'test'
+  ...
+# Subtest: truncate leaves fitting and empty strings unchanged
+ok 104 - truncate leaves fitting and empty strings unchanged
+  ---
+  duration_ms: 0.3571
+  type: 'test'
+  ...
+# Subtest: truncate keeps the longest whole-word prefix and removes trailing whitespace
+ok 105 - truncate keeps the longest whole-word prefix and removes trailing whitespace
+  ---
+  duration_ms: 0.317391
+  type: 'test'
+  ...
+# Subtest: truncate shortens a word when the first word does not fit
+ok 106 - truncate shortens a word when the first word does not fit
+  ---
+  duration_ms: 0.205215
+  type: 'test'
+  ...
+# Subtest: truncate counts Unicode code points without splitting emoji
+ok 107 - truncate counts Unicode code points without splitting emoji
+  ---
+  duration_ms: 0.266127
+  type: 'test'
+  ...
+# Subtest: truncate rejects invalid maximum lengths
+ok 108 - truncate rejects invalid maximum lengths
+  ---
+  duration_ms: 0.389669
+  type: 'test'
+  ...
+# Subtest: wordCount counts words and treats hyphenated words as one
+ok 109 - wordCount counts words and treats hyphenated words as one
+  ---
+  duration_ms: 5.299094
+  type: 'test'
+  ...
+# Subtest: wordCount returns zero when no words are present
+ok 110 - wordCount returns zero when no words are present
+  ---
+  duration_ms: 0.215969
+  type: 'test'
+  ...
+# Subtest: wordCount handles apostrophes, Unicode, numbers, and mixed whitespace
+ok 111 - wordCount handles apostrophes, Unicode, numbers, and mixed whitespace
+  ---
+  duration_ms: 2.033948
+  type: 'test'
+  ...
+# Subtest: wordCount ignores standalone combining marks but includes attached marks
+ok 112 - wordCount ignores standalone combining marks but includes attached marks
+  ---
+  duration_ms: 0.206955
+  type: 'test'
+  ...
+# Subtest: repeatWithSeparator repeats a string and joins copies with the separator
+ok 113 - repeatWithSeparator repeats a string and joins copies with the separator
+  ---
+  duration_ms: 0.281346
+  type: 'test'
+  ...
+# Subtest: repeatWithSeparator returns empty for a zero count
+ok 114 - repeatWithSeparator returns empty for a zero count
+  ---
+  duration_ms: 0.171577
+  type: 'test'
+  ...
+# Subtest: repeatWithSeparator returns the string unchanged for a count of one
+ok 115 - repeatWithSeparator returns the string unchanged for a count of one
+  ---
+  duration_ms: 0.201162
+  type: 'test'
+  ...
+# Subtest: repeatWithSeparator places separators between empty copies
+ok 116 - repeatWithSeparator places separators between empty copies
+  ---
+  duration_ms: 0.175907
+  type: 'test'
+  ...
+# Subtest: repeatWithSeparator allows an empty separator
+ok 117 - repeatWithSeparator allows an empty separator
+  ---
+  duration_ms: 0.177298
+  type: 'test'
+  ...
+# Subtest: repeatWithSeparator uses a multi-character separator literally
+ok 118 - repeatWithSeparator uses a multi-character separator literally
+  ---
+  duration_ms: 0.176216
+  type: 'test'
+  ...
+# Subtest: repeatWithSeparator preserves Unicode strings and separators
+ok 119 - repeatWithSeparator preserves Unicode strings and separators
+  ---
+  duration_ms: 0.265402
+  type: 'test'
+  ...
+# Subtest: repeatWithSeparator rejects counts that are not non-negative integers
+ok 120 - repeatWithSeparator rejects counts that are not non-negative integers
+  ---
+  duration_ms: 0.629937
+  type: 'test'
+  ...
+# Subtest: countOccurrences counts matches from left to right
+ok 121 - countOccurrences counts matches from left to right
+  ---
+  duration_ms: 0.31918
+  type: 'test'
+  ...
+# Subtest: countOccurrences does not count overlapping matches
+ok 122 - countOccurrences does not count overlapping matches
+  ---
+  duration_ms: 0.172881
+  type: 'test'
+  ...
+# Subtest: countOccurrences returns zero when the search is absent
+ok 123 - countOccurrences returns zero when the search is absent
+  ---
+  duration_ms: 0.17675
+  type: 'test'
+  ...
+# Subtest: countOccurrences returns zero for an empty search
+ok 124 - countOccurrences returns zero for an empty search
+  ---
+  duration_ms: 0.181744
+  type: 'test'
+  ...
+# Subtest: wordWrap greedily wraps words and allows exact-width lines
+ok 125 - wordWrap greedily wraps words and allows exact-width lines
+  ---
+  duration_ms: 0.401302
+  type: 'test'
+  ...
+# Subtest: wordWrap normalizes whitespace runs, including unusual whitespace
+ok 126 - wordWrap normalizes whitespace runs, including unusual whitespace
+  ---
+  duration_ms: 0.282868
+  type: 'test'
+  ...
+# Subtest: wordWrap returns empty for empty or whitespace-only input
+ok 127 - wordWrap returns empty for empty or whitespace-only input
+  ---
+  duration_ms: 0.227862
+  type: 'test'
+  ...
+# Subtest: wordWrap splits overlong words into width-sized chunks
+ok 128 - wordWrap splits overlong words into width-sized chunks
+  ---
+  duration_ms: 0.22409
+  type: 'test'
+  ...
+# Subtest: wordWrap counts Unicode code points and spaces toward the width
+ok 129 - wordWrap counts Unicode code points and spaces toward the width
+  ---
+  duration_ms: 0.297449
+  type: 'test'
+  ...
+# Subtest: wordWrap splits overlong Unicode words at code point boundaries
+ok 130 - wordWrap splits overlong Unicode words at code point boundaries
+  ---
+  duration_ms: 0.188941
+  type: 'test'
+  ...
+# Subtest: wordWrap rejects non-integer widths
+ok 131 - wordWrap rejects non-integer widths
+  ---
+  duration_ms: 0.24448
+  type: 'test'
+  ...
+# Subtest: wordWrap rejects zero or negative widths
+ok 132 - wordWrap rejects zero or negative widths
+  ---
+  duration_ms: 0.293081
+  type: 'test'
+  ...
+1..132
+# tests 132
+# suites 0
+# pass 132
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 608.902341
