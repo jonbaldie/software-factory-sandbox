@@ -200,6 +200,13 @@ test('snakeCase splits acronym and PascalCase boundaries', () => {
   assert.equal(snakeCase('HelloWorld'), 'hello_world');
 });
 
+test('snakeCase handles successive PascalCase words and preserves lower camelCase', () => {
+  assert.deepEqual(
+    [snakeCase('XMLHttpRequestBuilder'), snakeCase('fooBarBaz')],
+    ['xml_http_request_builder', 'foobarbaz'],
+  );
+});
+
 test('snakeCase treats punctuation and repeated whitespace as word separators', () => {
   assert.equal(snakeCase('  Already-split  words '), 'already_split_words');
 });

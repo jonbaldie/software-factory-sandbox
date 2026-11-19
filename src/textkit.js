@@ -117,10 +117,15 @@ export function kebabCase(input) {
  * @returns {string}
  */
 export function snakeCase(input) {
-  const separated = input
-    .replace(/(\p{Lu})(\p{Lu}\p{Ll})/gu, '$1 $2')
-    .replace(/(\p{Lu}\p{Ll}+)(\p{Lu})/gu, '$1 $2');
-  return separated.match(/[\p{L}\p{N}]+/gu)?.map((word) => word.toLowerCase()).join('_') ?? '';
+  const words = input.match(/[\p{L}\p{N}]+/gu) ?? [];
+  return words.flatMap((word) => {
+    if (/^\p{Ll}/u.test(word)) return [word.toLowerCase()];
+
+    const separated = word
+      .replace(/(\p{Lu})(\p{Lu}\p{Ll})/gu, '$1 $2')
+      .replace(/(\p{Lu}\p{Ll}+)(?=\p{Lu})/gu, '$1 ');
+    return separated.split(' ').map((part) => part.toLowerCase());
+  }).join('_');
 }
 
 /**
