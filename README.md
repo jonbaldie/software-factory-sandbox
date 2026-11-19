@@ -125,11 +125,12 @@ initials('Ada Lovelace', '.'); // "A.L."
 
 ### `kebabCase(input)`
 
-Converts runs of Unicode letters and numbers to lowercase words joined by hyphens. Other characters separate words, and camel-case boundaries are split. Empty input returns an empty string.
+Converts runs of Unicode letters and numbers to lowercase words joined by hyphens. Other characters separate words, and camel-case and acronym boundaries are split. Empty input returns an empty string.
 
 ```js
-kebabCase('Hello World'); // "hello-world"
-kebabCase('fooBar baz'); // "foo-bar-baz"
+kebabCase('Hello World');    // "hello-world"
+kebabCase('fooBar baz');     // "foo-bar-baz"
+kebabCase('XMLHttpRequest'); // "xml-http-request"
 ```
 
 ### `padCenter(input, width, fill = ' ')`
@@ -176,10 +177,11 @@ slugify('Crème Brûlée!'); // "creme-brulee"
 
 ### `snakeCase(input)`
 
-Converts runs of Unicode letters and numbers to lowercase words joined by underscores. Every other character separates words, and leading, trailing, or repeated separators are ignored. Empty input returns an empty string.
+Converts runs of Unicode letters and numbers to lowercase words joined by underscores. PascalCase and acronym boundaries are split; every other character separates words, and leading, trailing, or repeated separators are ignored. Empty input returns an empty string.
 
 ```js
 snakeCase('  Already-split  words '); // "already_split_words"
+snakeCase('XMLHttpRequest');         // "xml_http_request"
 ```
 
 ### `swapCase(input)`

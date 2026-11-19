@@ -96,24 +96,31 @@ export function slugify(input) {
 }
 
 /**
- * Convert runs of letters and numbers into lowercase words joined by hyphens.
+ * Convert runs of letters and numbers into lowercase words joined by hyphens, splitting camelCase and acronym boundaries.
  * @example kebabCase('Hello World') // "hello-world"
+ * @example kebabCase('XMLHttpRequest') // "xml-http-request"
  * @param {string} input
  * @returns {string}
  */
 export function kebabCase(input) {
-  const separated = input.replace(/([\p{Ll}\p{N}])(\p{Lu})/gu, '$1 $2');
+  const separated = input
+    .replace(/(\p{Lu})(\p{Lu}\p{Ll})/gu, '$1 $2')
+    .replace(/([\p{Ll}\p{N}])(\p{Lu})/gu, '$1 $2');
   return separated.match(/[\p{L}\p{N}]+/gu)?.map((word) => word.toLowerCase()).join('-') ?? '';
 }
 
 /**
- * Convert runs of letters and numbers into lowercase words joined by underscores.
+ * Convert runs of letters and numbers into lowercase words joined by underscores, splitting PascalCase and acronym boundaries.
  * @example snakeCase('Hello World') // "hello_world"
+ * @example snakeCase('XMLHttpRequest') // "xml_http_request"
  * @param {string} input
  * @returns {string}
  */
 export function snakeCase(input) {
-  return input.match(/[\p{L}\p{N}]+/gu)?.map((word) => word.toLowerCase()).join('_') ?? '';
+  const separated = input
+    .replace(/(\p{Lu})(\p{Lu}\p{Ll})/gu, '$1 $2')
+    .replace(/(\p{Lu}\p{Ll}+)(\p{Lu})/gu, '$1 $2');
+  return separated.match(/[\p{L}\p{N}]+/gu)?.map((word) => word.toLowerCase()).join('_') ?? '';
 }
 
 /**

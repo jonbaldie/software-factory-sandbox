@@ -138,6 +138,11 @@ test('kebabCase splits camelCase boundaries', () => {
   assert.equal(kebabCase('fooBar baz'), 'foo-bar-baz');
 });
 
+test('kebabCase splits acronym boundaries without changing ordinary camelCase', () => {
+  assert.equal(kebabCase('XMLHttpRequest'), 'xml-http-request');
+  assert.equal(kebabCase('HelloWorld'), 'hello-world');
+});
+
 test('kebabCase returns empty for empty input', () => {
   assert.equal(kebabCase(''), '');
 });
@@ -188,6 +193,11 @@ test('snakeCase lowercases words and joins them with underscores', () => {
 
 test('snakeCase does not split camelCase boundaries', () => {
   assert.equal(snakeCase('fooBar baz'), 'foobar_baz');
+});
+
+test('snakeCase splits acronym and PascalCase boundaries', () => {
+  assert.equal(snakeCase('XMLHttpRequest'), 'xml_http_request');
+  assert.equal(snakeCase('HelloWorld'), 'hello_world');
 });
 
 test('snakeCase treats punctuation and repeated whitespace as word separators', () => {
