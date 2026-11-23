@@ -52,6 +52,15 @@ jobs:
           fi
           # An assignee on the PR or its issue owns the work, so every later step is skipped and the labels stay as they are.
           issues=$(gh pr view "$PR" --json closingIssuesReferences -q '.closingIssuesReferences[].number')
+          # Read live state: a queued label event or manual dispatch can target a PR whose linked issue is already closed.
+          # A failed lookup fails this step, so it cannot be mistaken for an open issue.
+          for n in $issues; do
+            state=$(gh issue view "$n" --json state -q .state)
+            if [ "$state" != OPEN ]; then
+              echo "Issue #$n is $state; skipping fix and leaving the PR's labels alone."
+              exit 0
+            fi
+          done
           owners=$( { gh pr view "$PR" --json assignees -q '.assignees[].login'
             for n in $issues; do gh issue view "$n" --json assignees -q '.assignees[].login'; done; } | sort -u | sed 's/^/@/' | paste -sd' ' -)
           if [ -n "$owners" ]; then
@@ -91,8 +100,14 @@ jobs:
         if: steps.eligible.outputs.run == 'true'
         env:
           BASE: ${{ steps.pr.outputs.base }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          # A pull_request merge SHA can include unmerged PR content; the default branch cannot.
+          guard_sha=$(git --no-replace-objects rev-parse "refs/remotes/origin/$DEFAULT_BRANCH^{commit}")
+          echo "guard_sha=$guard_sha" >> "$GITHUB_OUTPUT"
+          guard=$(git --no-replace-objects show "$guard_sha:.github/factory/protected-tree.sh")
+          echo "guard_digest=$(printf '%s' "$guard" | sha256sum | cut -d' ' -f1)" >> "$GITHUB_OUTPUT"
           # Left uncommitted: conflicts stay marked for the agent, and the push step commits the merge with its work.
           if git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
             merge --no-ff --no-commit "origin/$BASE"; then
@@ -104,17 +119,11 @@ jobs:
               exit 1
             fi
           fi
-          if [ -n "$(git diff --name-only --diff-filter=U -- .github)" ]; then
+          if ! github_tree=$(bash -c "$guard" -- capture-index); then
             echo "::error::The branch conflicts with $BASE under .github/. The factory owns that folder."
             exit 1
           fi
-          # Snapshot only .github/ from the merged index. Other paths may still be unmerged.
-          index="$RUNNER_TEMP/github-index"
-          GIT_INDEX_FILE="$index" git read-tree --empty
-          git ls-files --stage -- .github | GIT_INDEX_FILE="$index" git update-index --index-info
-          github_tree=$(GIT_INDEX_FILE="$index" git write-tree)
           echo "github_tree=$github_tree" >> "$GITHUB_OUTPUT"
-          rm "$index"
 
       - name: Build the fix prompt
         if: steps.eligible.outputs.run == 'true'
@@ -178,6 +187,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           PUBLISH_TOKEN: ${{ steps.publisher.outputs.token || github.token }}
           BRANCH: ${{ steps.pr.outputs.branch }}
+          GUARD_SHA: ${{ steps.revision.outputs.guard_sha }}
+          GUARD_DIGEST: ${{ steps.revision.outputs.guard_digest }}
           GITHUB_TREE: ${{ steps.revision.outputs.github_tree }}
           AGENT_SUMMARY: ${{ steps.agent.outputs.result }}
           STARTED_SHA: ${{ steps.revision.outputs.sha }}
@@ -195,10 +206,28 @@ jobs:
               exit 0
             fi
           }
+          # The linked issue may close while the agent runs. Check again before publishing a commit.
+          # A failed lookup fails this step, so it cannot allow a push.
+          require_open_linked_issue() {
+            issues=$(gh pr view "$PR" --json closingIssuesReferences -q '.closingIssuesReferences[].number')
+            for n in $issues; do
+              state=$(gh issue view "$n" --json state -q .state)
+              if [ "$state" != OPEN ]; then
+                echo "Issue #$n is $state; stopping before publication."
+                gh pr comment "$PR" --body "⏹️ Issue #$n is closed, so nothing was published. [Fix run]($RUN_URL). To resume, reopen it, then remove and re-add \`agent:changes-requested\`."
+                exit 0
+              fi
+            done
+          }
+          require_open_linked_issue
           require_current_head
           git add -A
-          # Preserve pre-existing branch and base changes; reject only the agent's changes, including its commits.
-          if ! git diff --cached --quiet "$GITHUB_TREE" -- .github; then
+          guard=$(git --no-replace-objects show "$GUARD_SHA:.github/factory/protected-tree.sh")
+          if [ "$(printf '%s' "$guard" | sha256sum | cut -d' ' -f1)" != "$GUARD_DIGEST" ]; then
+            echo "::error::The protected-tree guard changed after the agent ran"
+            exit 1
+          fi
+          if ! bash -c "$guard" -- verify "$GITHUB_TREE"; then
             echo "::error::The agent changed files under .github/. The factory owns that folder."
             exit 1
           fi
